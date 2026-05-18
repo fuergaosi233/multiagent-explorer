@@ -132,6 +132,19 @@ test.describe('Multi-Agent Wiki', () => {
     await expect(page.locator('svg').first()).toBeVisible();
   });
 
+  test('mermaid diagrams open in a fullscreen zoom viewer', async ({ page }) => {
+    // /implementation/production-runtime has a mermaid topology in the body.
+    await page.goto('/implementation/production-runtime');
+    const expand = page.locator('button[aria-label="Open diagram fullscreen"]').first();
+    await expect(expand).toBeAttached();
+    // The button is opacity-0 until group hover, but is reachable via click.
+    await expand.click({ force: true });
+    await expect(page.locator('text=Diagram viewer')).toBeVisible();
+    await expect(page.locator('button[aria-label="Zoom in (+)"]')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('text=Diagram viewer')).not.toBeVisible();
+  });
+
   test('llms.txt endpoint is served', async ({ page }) => {
     const res = await page.goto('/llms.txt');
     expect(res?.status()).toBe(200);
