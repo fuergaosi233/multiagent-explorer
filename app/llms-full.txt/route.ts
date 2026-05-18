@@ -1,37 +1,52 @@
-import { PATTERNS } from '@/data/patterns';
-import { GROUP_NAMES, GROUP_ORDER, patternToMarkdown } from '@/lib/patterns-md';
+import { getNav } from '@/lib/wiki-nav';
+import { loadDoc } from '@/lib/wiki';
 
 export const dynamic = 'force-static';
 
 export async function GET() {
+  const nav = getNav();
   const out: string[] = [];
 
-  out.push('# Multi-Agent Explorer — full pattern reference');
+  out.push('# Multi-Agent Wiki — full content');
   out.push('');
-  out.push('Every pattern catalogued in the Multi-Agent Explorer, rendered as plain markdown for LLM ingestion. Source of truth: `data/patterns.ts` in the repo.');
+  out.push('Every wiki page concatenated as plain markdown for LLM ingestion. Source of truth lives under `content/wiki/` in the repo.');
   out.push('');
   out.push('## Table of contents');
   out.push('');
-  for (const group of GROUP_ORDER) {
-    const patterns = PATTERNS.filter(p => p.group === group);
-    if (!patterns.length) continue;
-    out.push(`### ${GROUP_NAMES[group]}`);
-    for (const p of patterns) {
-      out.push(`- ${p.title} (\`${p.id}\`)`);
+  for (const item of nav) {
+    if (item.type === 'doc') {
+      out.push(`- ${item.label} (\`${item.href}\`)`);
+    } else {
+      out.push('');
+      out.push(`### ${item.label}`);
+      for (const it of item.items) {
+        out.push(`- ${it.label} (\`${it.href}\`)`);
+      }
     }
-    out.push('');
   }
-
+  out.push('');
   out.push('---');
   out.push('');
 
-  for (const group of GROUP_ORDER) {
-    const patterns = PATTERNS.filter(p => p.group === group);
-    if (!patterns.length) continue;
-    out.push(`# ${GROUP_NAMES[group]}`);
-    out.push('');
-    for (const p of patterns) {
-      out.push(patternToMarkdown(p));
+  for (const item of nav) {
+    const docs = item.type === 'doc' ? [item] : item.items;
+    if (item.type === 'category') {
+      out.push(`# ${item.label}`);
+      out.push('');
+    }
+    for (const it of docs) {
+      const doc = loadDoc(it.slug);
+      if (!doc) continue;
+      out.push(`## ${doc.title}`);
+      if (doc.description) {
+        out.push('');
+        out.push(`*${doc.description}*`);
+      }
+      out.push('');
+      out.push(`Source: \`${it.href}\``);
+      out.push('');
+      out.push(doc.content.trim());
+      out.push('');
       out.push('---');
       out.push('');
     }

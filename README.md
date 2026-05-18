@@ -1,11 +1,17 @@
-# Multi-Agent Explorer
+# Multi-Agent Wiki
 
-Interactive UI for exploring and inspecting multi-agent system runs. Built with Next.js 16 + React 19.
+An engineering knowledge base for **multi-agent interaction patterns, classification, and implementation**. 29 patterns across 5 dimensions (control, information flow, decision, environment, protocols), 6 implementation guides, and a glossary — every pattern page with mermaid topology, when-to-use guidance, risks, pseudocode, and trace events. 13 of the patterns also embed an animated live visualization.
+
+Built with Next.js 16 (App Router) + React 19, shadcn-style design tokens, Geist fonts, framer-motion, react-markdown, and mermaid.
 
 ## Stack
 
-- Next.js 16 (App Router) + React 19
-- TypeScript, Tailwind
+- Next.js 16 (App Router) + React 19, TypeScript
+- Tailwind v4 with shadcn-style HSL/OKLCH tokens, light + dark mode (`next-themes`)
+- Geist Sans + Geist Mono
+- `react-markdown` + `remark-gfm` + `rehype-highlight`
+- `mermaid` for diagrams (client-rendered, theme-aware)
+- `framer-motion` for sidebar pill, page transitions, caption swaps
 - Playwright for E2E
 
 ## Local development
@@ -28,36 +34,53 @@ Open <http://localhost:3000>.
 | `npm run test:e2e` | Playwright E2E tests                     |
 | `npm run test:e2e:ui` | Playwright in interactive UI mode     |
 
-## Agent-friendly endpoints
-
-The site exposes the pattern catalog as plain markdown for LLM ingestion:
-
-| URL              | Purpose                                                                                  |
-| ---------------- | ---------------------------------------------------------------------------------------- |
-| `/llms.txt`      | Overview + one-line summary of every pattern ([llms.txt spec](https://llmstxt.org/))     |
-| `/llms-full.txt` | Every pattern in full markdown — mechanism, topology, timeline, when-to-use, risks, code |
-
-Both are generated at build time from `data/patterns.ts` (single source of truth) by route handlers in `app/llms.txt/route.ts` and `app/llms-full.txt/route.ts`. The HTML `<head>` includes a `<link rel="alternate" type="text/markdown" href="/llms.txt">` for automatic discovery.
-
-## Deploying to Vercel
-
-1. Push this repo to GitHub.
-2. In Vercel, **Add New Project** and import the repo.
-3. Framework preset: **Next.js** (auto-detected). Root directory: leave as repo root.
-4. Click **Deploy**. No env vars required.
-
 ## Layout
 
 ```
-app/         — Next.js App Router pages
-components/  — UI components
-data/        — Sample run data
-dsl/         — Run DSL (builder + examples)
-hooks/       — Custom React hooks
-types/       — Shared TypeScript types
-e2e/         — Playwright specs
-public/      — Static assets
-_handoff/    — Original Claude Design handoff (HTML prototype + chat transcripts)
+app/
+  page.tsx              — wiki home (renders content/wiki/index.md)
+  [...slug]/page.tsx    — catch-all that renders any wiki page; embeds the live
+                          visualization on pattern pages that have a matching animation
+  llms.txt/route.ts     — agent-friendly index of the wiki
+  llms-full.txt/route.ts — every wiki page concatenated as plain markdown
+  icon.svg              — brand mark, auto-served as favicon
+components/
+  wiki/                 — markdown renderer, mermaid renderer, sidebar, layout shell
+  ui/                   — shadcn primitives (Button, Card, Badge, Separator)
+  DiagramCanvas, Controls — animated pattern visualization
+  top-nav.tsx, theme-toggle.tsx, logo.tsx
+content/wiki/           — all markdown source (single source of truth)
+  index.md, taxonomy.md, decision-matrix.md
+  patterns/             — 29 pattern docs
+  implementation/       — 6 implementation guides
+  reference/            — glossary, references
+data/patterns.ts        — animated pattern data (drives 13 of the wiki patterns)
+hooks/useAnimationEngine.ts
+lib/
+  wiki.ts               — read + parse markdown
+  wiki-nav.ts           — sidebar navigation tree
+  pattern-map.ts        — animation id ↔ wiki slug
+  utils.ts              — `cn` helper
 ```
 
-The `_handoff/` directory preserves the source-of-truth design materials. It is not used at runtime and can be ignored by deployments.
+## Agent-friendly endpoints
+
+| URL              | Purpose                                                                                  |
+| ---------------- | ---------------------------------------------------------------------------------------- |
+| `/llms.txt`      | Overview + one-line summary of every page ([llms.txt spec](https://llmstxt.org/))         |
+| `/llms-full.txt` | Every wiki page concatenated as plain markdown                                            |
+
+Both are generated at build time from `content/wiki/` via route handlers (`dynamic = 'force-static'`). The HTML `<head>` includes `<link rel="alternate" type="text/markdown" href="/llms.txt">` for discovery.
+
+## Adding a new pattern page
+
+1. Drop a markdown file under `content/wiki/patterns/<slug>.md` following the template in [`content/wiki/implementation/pattern-page-template.md`](content/wiki/implementation/pattern-page-template.md).
+2. Register the slug in `lib/wiki-nav.ts` so it appears in the sidebar.
+3. (Optional) If the pattern has an animated counterpart in `data/patterns.ts`, add the mapping to `lib/pattern-map.ts` and the live visualization widget will embed automatically.
+
+## Deploying to Vercel
+
+1. Push to GitHub.
+2. In Vercel, **Add New Project** and import the repo.
+3. Framework preset: **Next.js** (auto-detected). Root directory: leave as repo root.
+4. **Deploy.** No env vars required.

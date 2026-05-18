@@ -1,37 +1,44 @@
-import { PATTERNS } from '@/data/patterns';
-import { GROUP_NAMES, GROUP_ORDER, patternSummary } from '@/lib/patterns-md';
+import { getNav } from '@/lib/wiki-nav';
+import { loadDoc } from '@/lib/wiki';
 
 export const dynamic = 'force-static';
 
 export async function GET() {
+  const nav = getNav();
   const out: string[] = [];
 
-  out.push('# Multi-Agent Explorer');
+  out.push('# Multi-Agent Wiki');
   out.push('');
-  out.push('> Interactive reference for 13 multi-agent system patterns across 5 categories — Centralized Control, Flow, Dialog, Decision, and Decentralized / Protocol. Each pattern includes a mechanism description, animated topology diagram, timeline of execution steps, when-to-use guidance, risks, a concrete example, and a runnable code snippet.');
+  out.push('> A working reference for multi-agent interaction patterns, classification, and engineering implementation. Each pattern answers four questions: what problem it solves, what its communication structure is, how to implement it in a real system, and when *not* to use it.');
   out.push('');
-  out.push('Designed for engineers picking a multi-agent architecture, and as a structured reference for LLM agents researching the design space. The UI at the homepage lets you step through each pattern\'s animation; this `llms.txt` is the text-only index.');
+  out.push('Site sections:');
   out.push('');
 
-  for (const group of GROUP_ORDER) {
-    const patterns = PATTERNS.filter(p => p.group === group);
-    if (!patterns.length) continue;
-    out.push(`## ${GROUP_NAMES[group]}`);
-    out.push('');
-    for (const p of patterns) {
-      out.push(`- **${p.title}** (\`${p.id}\`) — ${patternSummary(p)}`);
+  for (const item of nav) {
+    if (item.type === 'doc') {
+      const doc = loadDoc(item.slug);
+      const desc = doc?.description ?? '';
+      out.push(`- [${item.label}](${item.href})${desc ? ' — ' + desc : ''}`);
+    } else {
+      out.push('');
+      out.push(`## ${item.label}`);
+      out.push('');
+      for (const it of item.items) {
+        const doc = loadDoc(it.slug);
+        const desc = doc?.description ?? '';
+        out.push(`- [${it.label}](${it.href})${desc ? ' — ' + desc : ''}`);
+      }
     }
-    out.push('');
   }
 
+  out.push('');
   out.push('## Full content');
   out.push('');
-  out.push('- [/llms-full.txt](/llms-full.txt): every pattern in full markdown (mechanism, topology, timeline, variants, when-to-use, risks, example, code).');
+  out.push('- [/llms-full.txt](/llms-full.txt) — every wiki page concatenated as plain markdown.');
   out.push('');
-
   out.push('## Source');
   out.push('');
-  out.push('- [GitHub repository](https://github.com/fuergaosi233/multiagent-explorer)');
+  out.push('- [GitHub](https://github.com/fuergaosi233/multiagent-explorer)');
   out.push('');
 
   return new Response(out.join('\n'), {
