@@ -24,6 +24,7 @@ export async function GET() {
       out.push(`## ${item.label}`);
       out.push('');
       for (const it of item.items) {
+        if (it.type !== 'doc') continue;
         const doc = loadDoc(it.slug);
         const desc = doc?.description ?? '';
         out.push(`- [${it.label}](${it.href})${desc ? ' — ' + desc : ''}`);

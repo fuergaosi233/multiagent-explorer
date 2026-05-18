@@ -1,60 +1,22 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { LogoMark } from './logo';
 import { ThemeToggle } from './theme-toggle';
-import { Badge } from './ui/badge';
-import { cn } from '@/lib/utils';
-
-const TABS = [
-  { href: '/', label: 'Wiki' },
-  { href: '/patterns', label: 'Patterns' },
-];
 
 export function TopNav() {
-  const pathname = usePathname();
-  const activeIdx = TABS.findIndex(
-    t => pathname === t.href || (t.href !== '/' && pathname.startsWith(t.href)),
-  );
-
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex h-12 items-center gap-4 px-4 lg:px-6">
+      <div className="mx-auto flex h-14 max-w-[1400px] items-center gap-4 px-4 lg:px-6">
         <Link href="/" className="group flex items-center gap-2.5">
           <span className="flex size-7 items-center justify-center rounded-md bg-foreground text-background transition-transform group-hover:scale-105">
             <LogoMark size={15} className="text-brand" />
           </span>
-          <span className="flex items-center gap-1.5 text-[13px] font-semibold tracking-tight">
-            Multi-Agent Wiki
-            <Badge variant="brand" className="px-1.5 py-0 text-[9px] leading-none">v1</Badge>
-          </span>
+          <span className="text-[13.5px] font-semibold tracking-tight">Multi-Agent Wiki</span>
         </Link>
 
-        <div className="ml-2 flex h-8 items-center gap-0.5 rounded-md p-0.5">
-          {TABS.map((tab, i) => {
-            const active = i === activeIdx;
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={cn(
-                  'relative inline-flex h-7 items-center rounded-[5px] px-3 text-[12.5px] font-medium transition-colors',
-                  active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
-                )}
-              >
-                {active && (
-                  <motion.span
-                    layoutId="top-nav-pill"
-                    className="absolute inset-0 -z-0 rounded-[5px] bg-accent"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                )}
-                <span className="relative">{tab.label}</span>
-              </Link>
-            );
-          })}
-        </div>
+        <span className="ml-2 hidden font-mono text-[10.5px] font-medium uppercase tracking-[0.14em] text-muted-foreground/80 sm:inline">
+          patterns · runtime · references
+        </span>
 
         <div className="ml-auto flex items-center gap-1">
           <Link

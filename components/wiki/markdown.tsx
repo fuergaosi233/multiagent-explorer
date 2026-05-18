@@ -3,24 +3,22 @@ import Link from 'next/link';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeSlug from 'rehype-slug';
 import 'highlight.js/styles/github-dark.css';
 import { Mermaid } from './mermaid';
 import { cn } from '@/lib/utils';
 
 interface Props {
   content: string;
-  /** Current slug (e.g. ['patterns', 'supervisor-manager']) — used to resolve relative `./foo` links. */
   slug: string[];
 }
 
-/** Rewrite a relative wiki link (`./foo`, `../bar`, `foo.md`) into an absolute `/wiki/...` URL. */
 function resolveWikiLink(href: string | undefined, currentSlug: string[]): string | null {
   if (!href) return null;
   if (/^(https?:)?\/\//i.test(href)) return null;
   if (href.startsWith('#')) return null;
   if (href.startsWith('mailto:')) return null;
 
-  // Strip trailing .md and section anchor.
   const [pathPart, hash] = href.split('#');
   let clean = pathPart.replace(/\.md$/, '').replace(/\/index$/, '');
 
@@ -28,7 +26,6 @@ function resolveWikiLink(href: string | undefined, currentSlug: string[]): strin
   if (clean.startsWith('/')) {
     absolute = clean;
   } else {
-    // Resolve relative to the current page's *directory*.
     const dir = currentSlug.slice(0, -1);
     const parts = [...dir];
     for (const segment of clean.split('/')) {
@@ -69,14 +66,22 @@ export function Markdown({ content, slug }: Props) {
       );
     },
 
-    h1: ({ children }) => null, // h1 comes from page title separately
-    h2: ({ children }) => (
-      <h2 className="mt-10 mb-3 scroll-mt-20 text-xl font-semibold tracking-tight text-foreground first:mt-0">
-        {children}
+    h1: () => null,
+    h2: ({ children, ...props }) => (
+      <h2
+        {...props}
+        className="group mt-10 mb-3 scroll-mt-20 text-xl font-semibold tracking-tight text-foreground first:mt-0"
+      >
+        <a href={`#${(props as { id?: string }).id ?? ''}`} className="no-underline">
+          {children}
+        </a>
       </h2>
     ),
-    h3: ({ children }) => (
-      <h3 className="mt-6 mb-2 scroll-mt-20 text-base font-semibold tracking-tight text-foreground">
+    h3: ({ children, ...props }) => (
+      <h3
+        {...props}
+        className="mt-6 mb-2 scroll-mt-20 text-base font-semibold tracking-tight text-foreground"
+      >
         {children}
       </h3>
     ),
@@ -131,11 +136,7 @@ export function Markdown({ content, slug }: Props) {
           </code>
         );
       }
-
-      if (lang === 'mermaid') {
-        return <Mermaid chart={text} />;
-      }
-
+      if (lang === 'mermaid') return <Mermaid chart={text} />;
       return (
         <code className={cn(className, 'font-mono text-[12.5px] leading-relaxed')} {...props}>
           {children}
@@ -156,7 +157,7 @@ export function Markdown({ content, slug }: Props) {
     <article className="text-foreground">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[[rehypeHighlight, { detect: true, ignoreMissing: true }]]}
+        rehypePlugins={[rehypeSlug, [rehypeHighlight, { detect: true, ignoreMissing: true }]]}
         components={components}
       >
         {content}

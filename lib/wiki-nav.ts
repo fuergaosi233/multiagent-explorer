@@ -1,4 +1,5 @@
 import { getDocTitle } from './wiki';
+import { PATTERN_CATEGORIES } from './pattern-map';
 
 export interface NavLeaf {
   type: 'doc';
@@ -7,10 +8,16 @@ export interface NavLeaf {
   label: string;
 }
 
+/** A non-clickable visual subheader rendered inside a category. */
+export interface NavGroupLabel {
+  type: 'group';
+  label: string;
+}
+
 export interface NavCategory {
   type: 'category';
   label: string;
-  items: NavLeaf[];
+  items: (NavLeaf | NavGroupLabel)[];
 }
 
 export type NavItem = NavLeaf | NavCategory;
@@ -27,9 +34,22 @@ function leaf(slugStr: string, fallback?: string): NavLeaf {
 }
 
 /**
- * The wiki navigation tree, mirroring the upstream Docusaurus `sidebars.js`.
- * Labels are pulled from each doc's frontmatter `title` at build time.
+ * Build the patterns category content: overview leaf, then for each category
+ * a group header followed by the patterns belonging to it. This mirrors how
+ * proper docs sites (Stripe, Linear, shadcn) organize many siblings — group
+ * label → items.
  */
+function buildPatternItems(): (NavLeaf | NavGroupLabel)[] {
+  const items: (NavLeaf | NavGroupLabel)[] = [leaf('patterns', 'Overview')];
+  for (const cat of PATTERN_CATEGORIES) {
+    items.push({ type: 'group', label: cat.label });
+    for (const slug of cat.slugs) {
+      items.push(leaf(`patterns/${slug}`));
+    }
+  }
+  return items;
+}
+
 export function getNav(): NavItem[] {
   return [
     leaf('', 'Home'),
@@ -38,38 +58,7 @@ export function getNav(): NavItem[] {
     {
       type: 'category',
       label: 'Patterns',
-      items: [
-        leaf('patterns', '模式总览'),
-        leaf('patterns/supervisor-manager'),
-        leaf('patterns/agents-as-tools'),
-        leaf('patterns/handoff-router'),
-        leaf('patterns/sequential-pipeline'),
-        leaf('patterns/parallel-fanout-gather'),
-        leaf('patterns/hierarchical-decomposition'),
-        leaf('patterns/graph-workflow'),
-        leaf('patterns/group-chat'),
-        leaf('patterns/nested-chat'),
-        leaf('patterns/debate-judge'),
-        leaf('patterns/generator-critic'),
-        leaf('patterns/refinement-loop'),
-        leaf('patterns/role-playing-sop'),
-        leaf('patterns/blackboard-shared-memory'),
-        leaf('patterns/event-bus-pubsub'),
-        leaf('patterns/market-auction-contract-net'),
-        leaf('patterns/peer-swarm'),
-        leaf('patterns/mixture-of-agents'),
-        leaf('patterns/human-in-the-loop'),
-        leaf('patterns/protocol-mediated'),
-        leaf('patterns/clarification-at-edge'),
-        leaf('patterns/coordinator-dispatcher'),
-        leaf('patterns/voting-ensemble'),
-        leaf('patterns/composite-pattern'),
-        leaf('patterns/workspace-isolation'),
-        leaf('patterns/stigmergy-environment-mediated'),
-        leaf('patterns/coalition-federation-holonic'),
-        leaf('patterns/social-simulation'),
-        leaf('patterns/marl-ctde'),
-      ],
+      items: buildPatternItems(),
     },
     {
       type: 'category',
@@ -94,17 +83,16 @@ export function getNav(): NavItem[] {
   ];
 }
 
-/** Flatten nav to just leaves, in display order — for prev/next links. */
+/** Flatten nav to its leaves in display order — for prev/next. */
 export function flatNav(): NavLeaf[] {
   const out: NavLeaf[] = [];
   for (const item of getNav()) {
     if (item.type === 'doc') out.push(item);
-    else out.push(...item.items);
+    else for (const it of item.items) if (it.type === 'doc') out.push(it);
   }
   return out;
 }
 
-/** Find adjacent docs for the prev/next nav at the bottom of each page. */
 export function getNeighbors(slug: string[]): { prev?: NavLeaf; next?: NavLeaf } {
   const flat = flatNav();
   const key = slug.join('/');

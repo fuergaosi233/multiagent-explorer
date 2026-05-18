@@ -20,7 +20,7 @@ export async function GET() {
       out.push('');
       out.push(`### ${item.label}`);
       for (const it of item.items) {
-        out.push(`- ${it.label} (\`${it.href}\`)`);
+        if (it.type === 'doc') out.push(`- ${it.label} (\`${it.href}\`)`);
       }
     }
   }
@@ -29,7 +29,7 @@ export async function GET() {
   out.push('');
 
   for (const item of nav) {
-    const docs = item.type === 'doc' ? [item] : item.items;
+    const docs = item.type === 'doc' ? [item] : item.items.filter(it => it.type === 'doc');
     if (item.type === 'category') {
       out.push(`# ${item.label}`);
       out.push('');
