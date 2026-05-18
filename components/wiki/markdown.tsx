@@ -7,6 +7,7 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import 'highlight.js/styles/github-dark.css';
 import { Mermaid } from './mermaid';
+import { FlowDiagram } from './flow-diagram';
 import { CodeBlock } from './code-block';
 import { cn } from '@/lib/utils';
 
@@ -219,7 +220,11 @@ export function Markdown({ content, slug }: Props) {
       const source = meta?.source ?? '';
 
       if (lang && MERMAID_TAGS.has(lang)) {
-        return <Mermaid chart={toMermaidSource(lang, source)} />;
+        const chart = toMermaidSource(lang, source);
+        // Try the React Flow renderer first (animated edges, draggable
+        // nodes, fullscreen zoom). It transparently falls back to the
+        // mermaid renderer for any syntax it can't handle.
+        return <FlowDiagram chart={chart} fallback={<Mermaid chart={chart} />} />;
       }
 
       return (

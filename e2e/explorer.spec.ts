@@ -132,15 +132,15 @@ test.describe('Multi-Agent Wiki', () => {
     await expect(page.locator('svg').first()).toBeVisible();
   });
 
-  test('mermaid diagrams open in a fullscreen zoom viewer', async ({ page }) => {
-    // /implementation/production-runtime has a mermaid topology in the body.
+  test('diagrams render via React Flow with fullscreen viewer', async ({ page }) => {
     await page.goto('/implementation/production-runtime');
-    const expand = page.locator('button[aria-label="Open diagram fullscreen"]').first();
-    await expect(expand).toBeAttached();
-    // The button is opacity-0 until group hover, but is reachable via click.
-    await expand.click({ force: true });
+    // React Flow takes over for parseable mermaid → look for the RF root.
+    await expect(page.locator('.react-flow').first()).toBeVisible();
+    // Animated edges + custom nodes mean there is at least one Handle and edge path.
+    await expect(page.locator('.react-flow__node').first()).toBeVisible();
+    // Fullscreen viewer
+    await page.locator('button[aria-label="Open diagram fullscreen"]').first().click({ force: true });
     await expect(page.locator('text=Diagram viewer')).toBeVisible();
-    await expect(page.locator('button[aria-label="Zoom in (+)"]')).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(page.locator('text=Diagram viewer')).not.toBeVisible();
   });
