@@ -25,14 +25,13 @@ test.describe('Multi-Agent Wiki', () => {
     await expect(page.locator('.controls button.primary')).toBeVisible();
   });
 
-  test('pattern without animation still shows a static topology hero', async ({ page }) => {
-    await page.goto('/patterns/marl-ctde');
-    await expect(page.locator('h1', { hasText: /MARL/ })).toBeVisible();
-    // No animated diagram canvas
-    await expect(page.locator('.canvas-wrap')).toHaveCount(0);
-    // But the static mermaid hero is present
-    await expect(page.locator('text=Topology').first()).toBeVisible();
-    await expect(page.locator('svg').first()).toBeVisible();
+  test('every pattern page mounts an animated live visualization', async ({ page }) => {
+    // The 16 previously-static patterns now have full animation data too.
+    for (const slug of ['marl-ctde', 'stigmergy-environment-mediated', 'voting-ensemble', 'composite-pattern']) {
+      await page.goto(`/patterns/${slug}`);
+      await expect(page.locator('.canvas-wrap svg.diagram')).toBeVisible();
+      await expect(page.locator('.controls button.primary')).toBeVisible();
+    }
   });
 
   test('sidebar nav is grouped by category for patterns', async ({ page }) => {

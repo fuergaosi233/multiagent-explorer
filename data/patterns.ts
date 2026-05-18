@@ -1,6 +1,7 @@
 import type { Pattern } from '@/types/pattern';
+import { EXTRA_PATTERNS } from './patterns-extra';
 
-export const PATTERNS: Pattern[] = [
+const BASE_PATTERNS: Pattern[] = [
   /* ─── I · CENTRALIZED CONTROL ─── */
   {
     id: 'supervisor', group: 'centralized', num: '01', grpLabel: 'CENTRALIZED CONTROL',
@@ -698,3 +699,5 @@ quote = <span class="k">await</span> sales.send({
     },
   },
 ];
+
+export const PATTERNS: Pattern[] = [...BASE_PATTERNS, ...EXTRA_PATTERNS];
