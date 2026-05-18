@@ -23,6 +23,11 @@ const sourceSerif = Source_Serif_4({
 export const metadata: Metadata = {
   title: "Multi-Agent Explorer",
   description: "Interactive explorer for 13 multi-agent interaction patterns",
+  alternates: {
+    types: {
+      'text/markdown': '/llms.txt',
+    },
+  },
 };
 
 export default function RootLayout({

@@ -28,6 +28,17 @@ Open <http://localhost:3000>.
 | `npm run test:e2e` | Playwright E2E tests                     |
 | `npm run test:e2e:ui` | Playwright in interactive UI mode     |
 
+## Agent-friendly endpoints
+
+The site exposes the pattern catalog as plain markdown for LLM ingestion:
+
+| URL              | Purpose                                                                                  |
+| ---------------- | ---------------------------------------------------------------------------------------- |
+| `/llms.txt`      | Overview + one-line summary of every pattern ([llms.txt spec](https://llmstxt.org/))     |
+| `/llms-full.txt` | Every pattern in full markdown — mechanism, topology, timeline, when-to-use, risks, code |
+
+Both are generated at build time from `data/patterns.ts` (single source of truth) by route handlers in `app/llms.txt/route.ts` and `app/llms-full.txt/route.ts`. The HTML `<head>` includes a `<link rel="alternate" type="text/markdown" href="/llms.txt">` for automatic discovery.
+
 ## Deploying to Vercel
 
 1. Push this repo to GitHub.
