@@ -119,6 +119,19 @@ test.describe('Multi-Agent Wiki', () => {
     expect(twCard).toBe('summary_large_image');
   });
 
+  test('code blocks get a lang header + copy button', async ({ page }) => {
+    await page.goto('/implementation/observability');
+    // TS code block has a "TypeScript" header label and a copy button.
+    await expect(page.locator('text=TypeScript').first()).toBeVisible();
+    await expect(page.locator('button[aria-label="Copy code"]').first()).toBeVisible();
+  });
+
+  test('bare flowchart fences render as mermaid diagrams', async ({ page }) => {
+    // /taxonomy renders the global taxonomy mermaid; verify it became an SVG.
+    await page.goto('/taxonomy');
+    await expect(page.locator('svg').first()).toBeVisible();
+  });
+
   test('llms.txt endpoint is served', async ({ page }) => {
     const res = await page.goto('/llms.txt');
     expect(res?.status()).toBe(200);

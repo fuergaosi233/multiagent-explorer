@@ -1,16 +1,53 @@
 'use client';
 import Link from 'next/link';
+import { Children, isValidElement, type ReactElement } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import 'highlight.js/styles/github-dark.css';
 import { Mermaid } from './mermaid';
+import { CodeBlock } from './code-block';
 import { cn } from '@/lib/utils';
 
 interface Props {
   content: string;
   slug: string[];
+}
+
+/** Languages that Mermaid renders as diagrams. */
+const MERMAID_TAGS = new Set([
+  'mermaid',
+  'flowchart',
+  'sequencediagram',
+  'statediagram',
+  'statediagram-v2',
+  'classdiagram',
+  'erdiagram',
+  'journey',
+  'gantt',
+  'pie',
+  'gitgraph',
+  'mindmap',
+  'timeline',
+  'quadrantchart',
+  'sankey',
+  'xychart',
+  'block',
+  'packet',
+]);
+
+/** First-token detection so a bare ```flowchart block whose body already starts with
+ *  `flowchart TD` is rendered correctly without double-prepending. */
+const MERMAID_BARE_KEYWORDS = new Set(
+  Array.from(MERMAID_TAGS).filter(t => t !== 'mermaid'),
+);
+
+function toMermaidSource(lang: string, body: string): string {
+  if (lang === 'mermaid') return body;
+  const firstToken = body.trim().split(/\s/, 1)[0]?.toLowerCase() ?? '';
+  if (MERMAID_BARE_KEYWORDS.has(firstToken)) return body;
+  return `${lang}\n${body}`;
 }
 
 function resolveWikiLink(href: string | undefined, currentSlug: string[]): string | null {
@@ -20,7 +57,7 @@ function resolveWikiLink(href: string | undefined, currentSlug: string[]): strin
   if (href.startsWith('mailto:')) return null;
 
   const [pathPart, hash] = href.split('#');
-  let clean = pathPart.replace(/\.md$/, '').replace(/\/index$/, '');
+  const clean = pathPart.replace(/\.md$/, '').replace(/\/index$/, '');
 
   let absolute: string;
   if (clean.startsWith('/')) {
@@ -35,9 +72,46 @@ function resolveWikiLink(href: string | undefined, currentSlug: string[]): strin
     }
     absolute = '/' + parts.join('/');
   }
-
   if (!absolute.startsWith('/')) absolute = '/' + absolute;
   return absolute + (hash ? '#' + hash : '');
+}
+
+/** Flatten a React node tree to plain text — needed when rehype-highlight has
+ *  wrapped the source in <span> tokens for syntax highlighting. */
+function nodeText(node: React.ReactNode): string {
+  if (node == null || node === false || node === true) return '';
+  if (typeof node === 'string' || typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(nodeText).join('');
+  if (isValidElement(node)) {
+    return nodeText((node.props as { children?: React.ReactNode }).children);
+  }
+  return '';
+}
+
+/** Recursively find the first element carrying a `language-xxx` className —
+ *  rehype-highlight nests the syntax-highlighted code under <code class="hljs
+ *  language-ts">…</code>, but the inner code element is what we want. */
+function findCodeElement(node: React.ReactNode): ReactElement<{ className?: string; children?: React.ReactNode }> | null {
+  const arr = Children.toArray(node);
+  for (const c of arr) {
+    if (!isValidElement(c)) continue;
+    const cls = (c.props as { className?: string }).className;
+    if (cls && /language-[\w-]+/.test(cls)) return c as ReactElement<{ className?: string; children?: React.ReactNode }>;
+    const inner = findCodeElement((c.props as { children?: React.ReactNode }).children);
+    if (inner) return inner;
+  }
+  return null;
+}
+
+function readCodeChild(children: React.ReactNode): { lang?: string; source: string } | null {
+  const el = findCodeElement(children);
+  if (!el) {
+    // No language tag → still return source text so we can wrap it as plain code.
+    return { source: nodeText(children).replace(/\n$/, '') };
+  }
+  const cls = el.props.className ?? '';
+  const lang = cls.match(/language-([\w-]+)/)?.[1];
+  return { lang, source: nodeText(el.props.children).replace(/\n$/, '') };
 }
 
 export function Markdown({ content, slug }: Props) {
@@ -78,10 +152,7 @@ export function Markdown({ content, slug }: Props) {
       </h2>
     ),
     h3: ({ children, ...props }) => (
-      <h3
-        {...props}
-        className="mt-6 mb-2 scroll-mt-20 text-base font-semibold tracking-tight text-foreground"
-      >
+      <h3 {...props} className="mt-6 mb-2 scroll-mt-20 text-base font-semibold tracking-tight text-foreground">
         {children}
       </h3>
     ),
@@ -124,30 +195,41 @@ export function Markdown({ content, slug }: Props) {
     ),
     td: ({ children }) => <td className="px-3 py-2 align-top text-foreground/80">{children}</td>,
 
+    // Inline code stays unwrapped; block code is intercepted at `pre` so we
+    // can wrap with a header + copy button (and route Mermaid-like langs to
+    // the diagram renderer).
     code: ({ className, children, ...props }) => {
-      const lang = className?.replace(/^language-/, '');
-      const inline = !lang;
-      const text = String(children).replace(/\n$/, '');
-
-      if (inline) {
+      if (!className) {
         return (
           <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.86em] text-foreground">
             {children}
           </code>
         );
       }
-      if (lang === 'mermaid') return <Mermaid chart={text} />;
       return (
-        <code className={cn(className, 'font-mono text-[12.5px] leading-relaxed')} {...props}>
+        <code className={cn(className, 'block font-mono text-[12.5px] leading-relaxed')} {...props}>
           {children}
         </code>
       );
     },
-    pre: ({ children }) => (
-      <pre className="my-4 overflow-x-auto rounded-lg bg-zinc-950 px-4 py-3 text-[12.5px] leading-relaxed text-zinc-100 [&_code]:bg-transparent [&_code]:p-0">
-        {children}
-      </pre>
-    ),
+
+    pre: ({ children }) => {
+      const meta = readCodeChild(children);
+      const lang = meta?.lang?.toLowerCase();
+      const source = meta?.source ?? '';
+
+      if (lang && MERMAID_TAGS.has(lang)) {
+        return <Mermaid chart={toMermaidSource(lang, source)} />;
+      }
+
+      return (
+        <CodeBlock lang={meta?.lang} source={source}>
+          <pre className="overflow-x-auto px-4 py-3 text-[12.5px] leading-relaxed text-zinc-100 [&_code]:bg-transparent [&_code]:p-0">
+            {children}
+          </pre>
+        </CodeBlock>
+      );
+    },
 
     strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
     em: ({ children }) => <em className="italic">{children}</em>,
