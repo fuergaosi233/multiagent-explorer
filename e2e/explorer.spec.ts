@@ -81,9 +81,9 @@ test.describe('Multi-Agent Explorer', () => {
     await page.goto('/');
     await pauseEngine(page);
 
-    const select = page.locator('.controls .speed-group select');
-    await select.selectOption('2');
-    await expect(select).toHaveValue('2');
+    const btn = page.locator('.controls .speed-group button[data-speed="2"]');
+    await btn.click();
+    await expect(btn).toHaveAttribute('aria-pressed', 'true');
   });
 
   test('ArrowDown keyboard navigates to next pattern', async ({ page }) => {

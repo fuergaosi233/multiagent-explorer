@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import { Activity } from 'lucide-react';
 import type { Pattern, PatternNode, PatternEdge } from '@/types/pattern';
-import type { AnimationState } from '@/hooks/useAnimationEngine';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const NODE_W = 140, NODE_H = 54;
@@ -63,12 +63,10 @@ function spawnTokens(
   let rafId: number;
   function tick(now: number) {
     const elapsed = now - start;
-    let anyAlive = false;
     tokens.forEach((tk, i) => {
       const tStart = i * TOKEN_STAGGER * duration;
       const t = (elapsed - tStart) / traverseTime;
       if (t < 0 || t > 1) { tk.setAttribute('opacity', '0'); return; }
-      anyAlive = true;
       const u = reverse ? (1 - t) : t;
       const pt = pathEl.getPointAtLength(u * len);
       tk.setAttribute('cx', String(pt.x));
@@ -109,11 +107,9 @@ export default function DiagramCanvas({ pattern, engineState, speed }: Props) {
     const svg = svgRef.current;
     if (!svg) return;
 
-    // Clear previous bubbles cleanup
     cleanupRef.current.forEach(fn => fn());
     cleanupRef.current = [];
 
-    // Remove non-defs children
     Array.from(svg.children).forEach(c => { if (c.tagName !== 'defs') c.remove(); });
 
     const gDeco = document.createElementNS(SVG_NS, 'g');
@@ -123,27 +119,26 @@ export default function DiagramCanvas({ pattern, engineState, speed }: Props) {
     const gNodes = document.createElementNS(SVG_NS, 'g');
     svg.append(gDeco, gEdges, gBubbles, gNodes);
 
-    // Decorations
     (pattern.decorations ?? []).forEach(d => {
       if (d.type !== 'rect') return;
       const r = document.createElementNS(SVG_NS, 'rect') as SVGRectElement;
       r.setAttribute('x', String(d.x)); r.setAttribute('y', String(d.y));
       r.setAttribute('width', String(d.w)); r.setAttribute('height', String(d.h));
-      r.setAttribute('rx', '8'); r.setAttribute('fill', 'none');
-      r.setAttribute('stroke', 'var(--accent)'); r.setAttribute('stroke-width', '1.2');
-      r.setAttribute('stroke-dasharray', '7 5'); r.setAttribute('opacity', '0.6');
+      r.setAttribute('rx', '10'); r.setAttribute('fill', 'none');
+      r.setAttribute('stroke', 'var(--brand)'); r.setAttribute('stroke-width', '1.2');
+      r.setAttribute('stroke-dasharray', '7 5'); r.setAttribute('opacity', '0.55');
       gDeco.appendChild(r);
       if (d.label) {
         const bg = document.createElementNS(SVG_NS, 'rect') as SVGRectElement;
         bg.setAttribute('x', String(d.x + 16)); bg.setAttribute('y', String(d.y - 10));
         bg.setAttribute('width', '96'); bg.setAttribute('height', '20');
-        bg.setAttribute('rx', '2'); bg.setAttribute('fill', 'var(--bg-ink)');
+        bg.setAttribute('rx', '4'); bg.setAttribute('fill', 'var(--card)');
         gDeco.appendChild(bg);
         const lbl = document.createElementNS(SVG_NS, 'text') as SVGTextElement;
         lbl.setAttribute('x', String(d.x + 64)); lbl.setAttribute('y', String(d.y + 1));
         lbl.setAttribute('text-anchor', 'middle'); lbl.setAttribute('dominant-baseline', 'central');
-        lbl.setAttribute('font-family', 'var(--mono)'); lbl.setAttribute('font-size', '11');
-        lbl.setAttribute('fill', 'var(--accent)'); lbl.setAttribute('letter-spacing', '0.18em');
+        lbl.setAttribute('font-family', 'var(--font-mono)'); lbl.setAttribute('font-size', '10');
+        lbl.setAttribute('fill', 'var(--brand)'); lbl.setAttribute('letter-spacing', '0.18em');
         lbl.textContent = d.label;
         gDeco.appendChild(lbl);
       }
@@ -152,7 +147,6 @@ export default function DiagramCanvas({ pattern, engineState, speed }: Props) {
     const nodesById: Record<string, PatternNode> = {};
     pattern.nodes.forEach(n => { nodesById[n.id] = n; });
 
-    // Edges
     Object.entries(pattern.edges).forEach(([eid, edge]) => {
       const d = buildPath(edge, nodesById);
       const path = document.createElementNS(SVG_NS, 'path') as SVGPathElement;
@@ -163,17 +157,16 @@ export default function DiagramCanvas({ pattern, engineState, speed }: Props) {
       gEdges.appendChild(path);
 
       if (edge.label) {
-        // measure mid point after appending
         requestAnimationFrame(() => {
           const len = path.getTotalLength();
           const mid = path.getPointAtLength(len / 2);
-          const charW = 6.5, padX = 6, padY = 2, fontSize = 11;
+          const charW = 6.2, padX = 6, padY = 2, fontSize = 10.5;
           const w = edge.label!.length * charW + padX * 2;
           const h = fontSize + padY * 2;
           const bg = document.createElementNS(SVG_NS, 'rect') as SVGRectElement;
           bg.setAttribute('x', String(mid.x - w / 2)); bg.setAttribute('y', String(mid.y - h / 2));
           bg.setAttribute('width', String(w)); bg.setAttribute('height', String(h));
-          bg.setAttribute('rx', '2'); bg.setAttribute('class', 'edge-label-bg');
+          bg.setAttribute('rx', '4'); bg.setAttribute('class', 'edge-label-bg');
           bg.setAttribute('data-eid', eid);
           gEdges.insertBefore(bg, path);
           const txt = document.createElementNS(SVG_NS, 'text') as SVGTextElement;
@@ -186,7 +179,6 @@ export default function DiagramCanvas({ pattern, engineState, speed }: Props) {
       }
     });
 
-    // Nodes
     pattern.nodes.forEach(n => {
       const w = n.w ?? NODE_W, h = n.h ?? NODE_H;
       const g = document.createElementNS(SVG_NS, 'g') as SVGGElement;
@@ -205,8 +197,8 @@ export default function DiagramCanvas({ pattern, engineState, speed }: Props) {
         rect.setAttribute('x', String(n.x)); rect.setAttribute('y', String(n.y));
         rect.setAttribute('width', String(w)); rect.setAttribute('height', String(h));
         rect.setAttribute('class', 'node-rect');
-        if (n.kind === 'user') { rect.setAttribute('rx', '30'); rect.setAttribute('ry', '30'); }
-        else { rect.setAttribute('rx', '6'); rect.setAttribute('ry', '6'); }
+        if (n.kind === 'user') { rect.setAttribute('rx', '28'); rect.setAttribute('ry', '28'); }
+        else { rect.setAttribute('rx', '8'); rect.setAttribute('ry', '8'); }
         g.appendChild(rect);
       }
 
@@ -229,32 +221,27 @@ export default function DiagramCanvas({ pattern, engineState, speed }: Props) {
     });
   }, [pattern]);
 
-  // Apply animation state — runs on each engineState update
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
 
-    // Nodes
     svg.querySelectorAll<SVGGElement>('.node[data-id]').forEach(g => {
       const id = g.dataset.id!;
       g.classList.toggle('active', engineState.activeNodes.has(id));
       g.classList.toggle('dim', engineState.dimNodes.has(id));
     });
 
-    // Edges
     svg.querySelectorAll<SVGPathElement>('.edge[data-eid]').forEach(p => {
       const eid = p.dataset.eid!;
       p.classList.toggle('firing', engineState.firingEdges.has(eid));
       p.classList.toggle('done', engineState.doneEdges.has(eid) && !engineState.firingEdges.has(eid));
     });
 
-    // Edge labels
     svg.querySelectorAll<SVGTextElement>('.edge-label[data-eid]').forEach(t => {
       const eid = t.dataset.eid!;
       t.classList.toggle('show', engineState.firingEdges.has(eid));
     });
 
-    // Token streams for firing edges
     const gBubbles = svg.querySelector<SVGGElement>('.bubbles-layer');
     if (!gBubbles) return;
 
@@ -269,16 +256,23 @@ export default function DiagramCanvas({ pattern, engineState, speed }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [engineState.firingEdges, engineState.activeNodes, engineState.dimNodes, engineState.doneEdges]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => { cleanupRef.current.forEach(fn => fn()); };
   }, []);
 
   return (
-    <div className="canvas-wrap">
-      <div className="replay-hint">
-        <span className="pulse" />
-        LIVE
+    <div className="canvas-wrap group relative w-full h-[clamp(380px,52vh,580px)] flex-shrink-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
+      <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
+        <span className="opacity-60">·</span>
+        <span>Diagram</span>
+      </div>
+      <div className="absolute right-3 top-3 z-10 flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
+        <span className="relative flex size-2">
+          <span className="absolute inset-0 animate-ping rounded-full bg-brand opacity-75" />
+          <span className="relative inline-flex size-2 rounded-full bg-brand" />
+        </span>
+        <Activity className="size-3" />
+        Live
       </div>
       <svg
         ref={svgRef}

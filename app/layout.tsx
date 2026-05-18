@@ -1,46 +1,36 @@
-import type { Metadata } from "next";
-import { DM_Sans, IBM_Plex_Mono, Source_Serif_4 } from "next/font/google";
-import "./globals.css";
-
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin"],
-  axes: ["opsz"],
-});
-
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
-
-const sourceSerif = Source_Serif_4({
-  variable: "--font-source-serif",
-  subsets: ["latin"],
-  axes: ["opsz"],
-});
+import type { Metadata } from 'next';
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
+import { ThemeProvider } from '@/components/theme-provider';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Multi-Agent Explorer",
-  description: "Interactive explorer for 13 multi-agent interaction patterns",
+  title: 'Multi-Agent Explorer',
+  description: 'Interactive explorer for 13 multi-agent interaction patterns',
   alternates: {
-    types: {
-      'text/markdown': '/llms.txt',
-    },
+    types: { 'text/markdown': '/llms.txt' },
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${ibmPlexMono.variable} ${sourceSerif.variable}`}
+      suppressHydrationWarning
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
-      <body>{children}</body>
+      <body className="font-sans antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
