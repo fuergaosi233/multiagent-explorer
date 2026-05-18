@@ -1,25 +1,52 @@
-# CODING AGENTS: READ THIS FIRST
+# Multi-Agent Explorer
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+Interactive UI for exploring and inspecting multi-agent system runs. Built with Next.js 16 + React 19.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+## Stack
 
-## What you should do — IMPORTANT
+- Next.js 16 (App Router) + React 19
+- TypeScript, Tailwind
+- Playwright for E2E
 
-**Read the chat transcripts first.** There are 2 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+## Local development
 
-**Read `project/Multi-Agent Explorer.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+```bash
+npm install
+npm run dev
+```
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+Open <http://localhost:3000>.
 
-## About the design files
+## Scripts
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+| Command            | Purpose                                  |
+| ------------------ | ---------------------------------------- |
+| `npm run dev`      | Start the dev server                     |
+| `npm run build`    | Production build                         |
+| `npm start`        | Run the production build                 |
+| `npm run lint`     | ESLint                                   |
+| `npm run test:e2e` | Playwright E2E tests                     |
+| `npm run test:e2e:ui` | Playwright in interactive UI mode     |
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+## Deploying to Vercel
 
-## Bundle contents
+1. Push this repo to GitHub.
+2. In Vercel, **Add New Project** and import the repo.
+3. Framework preset: **Next.js** (auto-detected). Root directory: leave as repo root.
+4. Click **Deploy**. No env vars required.
 
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `MutiAgent` project files (HTML prototypes, assets, components)
+## Layout
+
+```
+app/         — Next.js App Router pages
+components/  — UI components
+data/        — Sample run data
+dsl/         — Run DSL (builder + examples)
+hooks/       — Custom React hooks
+types/       — Shared TypeScript types
+e2e/         — Playwright specs
+public/      — Static assets
+_handoff/    — Original Claude Design handoff (HTML prototype + chat transcripts)
+```
+
+The `_handoff/` directory preserves the source-of-truth design materials. It is not used at runtime and can be ignored by deployments.
