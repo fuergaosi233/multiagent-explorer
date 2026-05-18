@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { listAllSlugs, loadDoc } from '@/lib/wiki';
-import { getNav, getNeighbors } from '@/lib/wiki-nav';
+import { getNeighbors } from '@/lib/wiki-nav';
 import { extractHeadings, extractTopology } from '@/lib/markdown-utils';
 import { WikiShell } from '@/components/wiki/wiki-shell';
 import { AnimatedPattern } from '@/components/wiki/animated-pattern';
@@ -27,9 +27,24 @@ export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const doc = loadDoc(slug);
   if (!doc) return {};
+  const path = '/' + slug.join('/');
   return {
-    title: `${doc.title} · Multi-Agent Wiki`,
+    title: doc.title,
     description: doc.description,
+    alternates: { canonical: path },
+    openGraph: {
+      type: 'article',
+      title: doc.title,
+      description: doc.description,
+      url: path,
+      images: [{ url: `/og${path}`, width: 1200, height: 630, alt: doc.title }],
+    },
+    twitter: {
+      card: 'summary_large_image' as const,
+      title: doc.title,
+      description: doc.description,
+      images: [`/og${path}`],
+    },
   };
 }
 
@@ -44,7 +59,6 @@ export default async function WikiPage({ params }: Props) {
   const doc = loadDoc(slug);
   if (!doc) notFound();
 
-  const nav = getNav();
   const { prev, next } = getNeighbors(slug);
 
   const breadcrumbs: { label: string; href?: string }[] = [{ label: 'Wiki', href: '/' }];
@@ -84,7 +98,6 @@ export default async function WikiPage({ params }: Props) {
 
   return (
     <WikiShell
-      nav={nav}
       title={doc.title}
       description={doc.description}
       content={content}

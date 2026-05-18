@@ -17,6 +17,9 @@ export interface NavGroupLabel {
 export interface NavCategory {
   type: 'category';
   label: string;
+  /** Optional href — when set, the category label itself is a link
+   *  (e.g. the "Patterns" header navigates to /patterns overview). */
+  href?: string;
   items: (NavLeaf | NavGroupLabel)[];
 }
 
@@ -34,13 +37,13 @@ function leaf(slugStr: string, fallback?: string): NavLeaf {
 }
 
 /**
- * Build the patterns category content: overview leaf, then for each category
- * a group header followed by the patterns belonging to it. This mirrors how
- * proper docs sites (Stripe, Linear, shadcn) organize many siblings — group
- * label → items.
+ * Build the patterns category content: each category becomes a group header
+ * followed by the patterns belonging to it. This mirrors how proper docs
+ * sites (Stripe, Linear, shadcn) organize many siblings — group label →
+ * items. The category label itself navigates to /patterns (the overview).
  */
 function buildPatternItems(): (NavLeaf | NavGroupLabel)[] {
-  const items: (NavLeaf | NavGroupLabel)[] = [leaf('patterns', 'Overview')];
+  const items: (NavLeaf | NavGroupLabel)[] = [];
   for (const cat of PATTERN_CATEGORIES) {
     items.push({ type: 'group', label: cat.label });
     for (const slug of cat.slugs) {
@@ -58,6 +61,7 @@ export function getNav(): NavItem[] {
     {
       type: 'category',
       label: 'Patterns',
+      href: '/patterns',
       items: buildPatternItems(),
     },
     {

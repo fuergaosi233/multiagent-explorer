@@ -66,6 +66,59 @@ test.describe('Multi-Agent Wiki', () => {
     expect(after).not.toEqual(before);
   });
 
+  test('Patterns category label navigates to /patterns overview', async ({ page }) => {
+    await page.goto('/');
+    // The category header itself is a link to the overview, distinct from the
+    // chevron-toggle next to it.
+    await page.getByRole('link', { name: /Patterns/ }).first().click();
+    await expect(page).toHaveURL(/\/patterns$/);
+    await expect(page.locator('h1', { hasText: /Patterns Overview/ })).toBeVisible();
+  });
+
+  test('sidebar scroll position is not reset to top on navigation', async ({ page }) => {
+    // The original bug: clicking any sidebar link slammed the sidebar's
+    // internal scroll back to 0. After the fix (sidebar lifted to the root
+    // layout + sessionStorage restore in useLayoutEffect), the scroll
+    // position is preserved across route changes.
+    await page.setViewportSize({ width: 1400, height: 800 });
+    await page.goto('/');
+    const sidebar = page.locator('aside .sticky').first();
+    await expect(sidebar).toBeVisible();
+
+    await sidebar.evaluate(el => { el.scrollTop = 400; });
+    const before = await sidebar.evaluate(el => el.scrollTop);
+    expect(before).toBeGreaterThan(50);
+
+    // Click a sidebar link — the click handler captures scroll into
+    // sessionStorage; the useLayoutEffect on the new pathname restores it.
+    await page.getByRole('link', { name: 'MARL / CTDE' }).first().click();
+    await expect(page).toHaveURL(/marl-ctde/);
+    await page.waitForTimeout(300);
+
+    const after = await sidebar.evaluate(el => el.scrollTop);
+    // The original bug landed at scrollTop=0. The fix keeps the scroll well
+    // away from the top. Exact value depends on whether the active item was
+    // scrolled into view by the click, so just assert "not at the top".
+    expect(after).toBeGreaterThan(100);
+  });
+
+  test('social card endpoints are served', async ({ page }) => {
+    for (const path of ['/sitemap.xml', '/robots.txt', '/manifest.webmanifest']) {
+      const res = await page.request.get(path);
+      expect(res.status(), `expected 200 for ${path}`).toBe(200);
+    }
+  });
+
+  test('home page sets opengraph + twitter meta', async ({ page }) => {
+    await page.goto('/');
+    const ogTitle = await page.locator('meta[property="og:title"]').first().getAttribute('content');
+    const ogImage = await page.locator('meta[property="og:image"]').first().getAttribute('content');
+    const twCard = await page.locator('meta[name="twitter:card"]').first().getAttribute('content');
+    expect(ogTitle).toContain('Multi-Agent Wiki');
+    expect(ogImage).toMatch(/opengraph-image/);
+    expect(twCard).toBe('summary_large_image');
+  });
+
   test('llms.txt endpoint is served', async ({ page }) => {
     const res = await page.goto('/llms.txt');
     expect(res?.status()).toBe(200);

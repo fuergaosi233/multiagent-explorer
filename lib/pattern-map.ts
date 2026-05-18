@@ -116,6 +116,17 @@ export const PATTERN_CATEGORY: Record<string, PatternCategory> = Object.fromEntr
   PATTERN_CATEGORIES.flatMap(({ label, slugs }) => slugs.map(s => [s, label])),
 );
 
+/** Hex equivalents of CATEGORY_TONE — used by the dynamic OG image generator,
+ *  which renders via Satori and can't use Tailwind classes. */
+export const CATEGORY_HEX: Record<PatternCategory, string> = {
+  Control:     '#f59e0b',
+  Information: '#0ea5e9',
+  Decision:    '#8b5cf6',
+  Environment: '#10b981',
+  Protocol:    '#f43f5e',
+  Specialized: '#71717a',
+};
+
 /** Map category → a Tailwind color hint for badges. */
 export const CATEGORY_TONE: Record<PatternCategory, string> = {
   Control:      'bg-amber-500/10 text-amber-600 border-amber-500/25 dark:text-amber-400',
