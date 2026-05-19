@@ -700,4 +700,78 @@ quote = <span class="k">await</span> sales.send({
   },
 ];
 
-export const PATTERNS: Pattern[] = [...BASE_PATTERNS, ...EXTRA_PATTERNS];
+import { PATTERN_ZH_OVERLAYS } from './patterns-zh-overlays';
+import { EXTRA_PATTERN_ZH_OVERLAYS } from './patterns-extra-zh-overlays';
+
+function mergeOverlays(patterns: Pattern[]): Pattern[] {
+  return patterns.map(p => {
+    const overlay = PATTERN_ZH_OVERLAYS[p.id] ?? EXTRA_PATTERN_ZH_OVERLAYS[p.id];
+    if (!overlay) return p;
+    const merged: Pattern = { ...p, ...overlay } as Pattern;
+
+    // Smart merge for timeline: overlay steps with only 'caption' are treated as captionZh
+    if (overlay.timeline && p.timeline) {
+      merged.timeline = p.timeline.map((step, i) => {
+        const o = overlay.timeline![i];
+        if (!o) return step;
+        const overlayKeys = Object.keys(o);
+        const hasOnlyCaption = overlayKeys.length === 1 && overlayKeys[0] === 'caption';
+        if (hasOnlyCaption) {
+          return { ...step, captionZh: o.caption };
+        }
+        return { ...step, ...o };
+      });
+    }
+
+    // Smart merge for nodes: match by id and only override label/sub
+    if (overlay.nodes && p.nodes) {
+      merged.nodes = p.nodes.map(node => {
+        const o = overlay.nodes!.find(n => n.id === node.id);
+        return o ? { ...node, ...o } : node;
+      });
+    }
+
+    // Smart merge for variants: match by index, smart-merge timeline captions
+    if (overlay.variants && p.variants) {
+      merged.variants = p.variants.map((v, i) => {
+        const o = overlay.variants![i];
+        if (!o) return v;
+        const mergedVariant = { ...v, ...o };
+        // Smart merge variant timeline
+        if (o.timeline && v.timeline) {
+          mergedVariant.timeline = v.timeline.map((step, j) => {
+            const os = o.timeline![j];
+            if (!os) return step;
+            const osKeys = Object.keys(os);
+            const hasOnlyCaption = osKeys.length === 1 && osKeys[0] === 'caption';
+            if (hasOnlyCaption) {
+              return { ...step, captionZh: os.caption };
+            }
+            return { ...step, ...os };
+          });
+        }
+        return mergedVariant;
+      });
+    }
+
+    return merged;
+  });
+}
+
+export const PATTERNS: Pattern[] = mergeOverlays([...BASE_PATTERNS, ...EXTRA_PATTERNS]);
+
+import { localizePattern } from '@/lib/patterns-i18n';
+
+let _zhCache: Pattern[] | null = null;
+
+export function getPatterns(locale?: string): Pattern[] {
+  if (locale === 'zh') {
+    if (!_zhCache) _zhCache = PATTERNS.map(p => localizePattern(p, 'zh'));
+    return _zhCache;
+  }
+  return PATTERNS;
+}
+
+export function getPattern(id: string, locale?: string): Pattern | undefined {
+  return getPatterns(locale).find(p => p.id === id);
+}

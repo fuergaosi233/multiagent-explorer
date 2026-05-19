@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -24,16 +25,18 @@ export default function Controls({
   step, totalSteps, playing, speed,
   onPlay, onPause, onRestart, onPrev, onNext, onGotoStep, onSpeedChange,
 }: Props) {
+  const t = useTranslations('controls');
+
   return (
     <div className="controls flex flex-wrap items-center gap-2">
       <Button variant="outline" size="sm" onClick={onRestart} className="font-mono text-[11px]">
         <RotateCcw className="size-3.5" />
-        Replay
+        {t('replay')}
       </Button>
 
-      <Button variant="outline" size="sm" onClick={onPrev} aria-label="Previous step" className="font-mono text-[11px]">
+      <Button variant="outline" size="sm" onClick={onPrev} aria-label={t('prev')} className="font-mono text-[11px]">
         <ChevronLeft className="size-3.5" />
-        Prev
+        {t('prev')}
       </Button>
 
       <Button
@@ -43,15 +46,14 @@ export default function Controls({
         className="primary min-w-[80px] font-mono text-[11px]"
       >
         {playing ? <Pause className="size-3.5" /> : <Play className="size-3.5" />}
-        {playing ? 'Pause' : 'Play'}
+        {playing ? t('pause') : t('play')}
       </Button>
 
-      <Button variant="outline" size="sm" onClick={onNext} aria-label="Next step" className="font-mono text-[11px]">
-        Next
+      <Button variant="outline" size="sm" onClick={onNext} aria-label={t('next')} className="font-mono text-[11px]">
+        {t('next')}
         <ChevronRight className="size-3.5" />
       </Button>
 
-      {/* Timeline scrubber */}
       <div className="flex h-9 min-w-0 flex-1 items-center gap-1.5 rounded-md border border-border bg-card px-3">
         {Array.from({ length: totalSteps }, (_, i) => (
           <div key={i} className="flex flex-1 items-center gap-1.5 first:flex-none">
@@ -64,8 +66,8 @@ export default function Controls({
             <button
               type="button"
               onClick={() => onGotoStep(i)}
-              title={`Step ${i + 1}`}
-              aria-label={`Step ${i + 1}`}
+              title={t('step', { step: i + 1 })}
+              aria-label={t('step', { step: i + 1 })}
               className="relative flex size-3.5 items-center justify-center rounded-full transition-transform hover:scale-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
             >
               {i === step && (
@@ -84,7 +86,6 @@ export default function Controls({
         ))}
       </div>
 
-      {/* Speed */}
       <div className="speed-group flex items-center gap-1 rounded-md border border-border bg-card p-0.5">
         {SPEEDS.map(s => (
           <button

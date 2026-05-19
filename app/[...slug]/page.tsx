@@ -10,11 +10,14 @@ import {
   WIKI_TO_PATTERN,
   type PatternCategory,
 } from '@/lib/pattern-map';
+import { getLocale } from '@/lib/locale';
+import { getTranslations } from 'next-intl/server';
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return listAllSlugs()
+  const slugs = listAllSlugs();
+  return slugs
     .filter(slug => slug.length > 0)
     .map(slug => ({ slug }));
 }
@@ -25,7 +28,8 @@ interface Props {
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
-  const doc = loadDoc(slug);
+  const locale = await getLocale();
+  const doc = loadDoc(slug, locale);
   if (!doc) return {};
   const path = '/' + slug.join('/');
   return {
@@ -48,24 +52,23 @@ export async function generateMetadata({ params }: Props) {
   };
 }
 
-const SECTION_LABELS: Record<string, string> = {
-  patterns: 'Patterns',
-  implementation: 'Implementation',
-  reference: 'Reference',
-};
-
 export default async function WikiPage({ params }: Props) {
   const { slug } = await params;
-  const doc = loadDoc(slug);
+  const locale = await getLocale();
+  const t = await getTranslations({ locale, namespace: 'wiki.breadcrumb' });
+  const doc = loadDoc(slug, locale);
   if (!doc) notFound();
 
-  const { prev, next } = getNeighbors(slug);
+  const { prev, next } = getNeighbors(slug, locale);
 
-  const breadcrumbs: { label: string; href?: string }[] = [{ label: 'Wiki', href: '/' }];
-  if (slug.length >= 1 && SECTION_LABELS[slug[0]]) {
+  const breadcrumbs: { label: string; href?: string }[] = [{ label: t('wiki'), href: '/' }];
+  if (slug.length >= 1) {
     const sectionHref = `/${slug[0]}`;
     breadcrumbs.push({
-      label: SECTION_LABELS[slug[0]],
+      label: slug[0] === 'patterns' ? t('patterns')
+        : slug[0] === 'implementation' ? t('implementation')
+        : slug[0] === 'reference' ? t('reference')
+        : slug[0],
       href: slug.length > 1 ? sectionHref : undefined,
     });
   }
@@ -78,8 +81,6 @@ export default async function WikiPage({ params }: Props) {
     ? PATTERN_CATEGORY[patternSlug]
     : undefined;
 
-  // Lift the first mermaid block out of the body so it becomes the hero
-  // and doesn't render twice on pattern pages.
   let content = doc.content;
   let widget: React.ReactNode = null;
 

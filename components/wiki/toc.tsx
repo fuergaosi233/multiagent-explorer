@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import type { Heading } from '@/lib/markdown-utils';
 import { cn } from '@/lib/utils';
 
@@ -8,13 +9,9 @@ interface Props {
   headings: Heading[];
 }
 
-/**
- * Right-side TOC. Tracks the current section via IntersectionObserver and
- * scrolls the corresponding entry into view. Anchors match the ids injected
- * by rehype-slug in the markdown renderer.
- */
 export function Toc({ headings }: Props) {
   const [active, setActive] = useState<string | null>(null);
+  const t = useTranslations('wiki');
 
   useEffect(() => {
     if (headings.length === 0) return;
@@ -26,7 +23,6 @@ export function Toc({ headings }: Props) {
 
     const obs = new IntersectionObserver(
       entries => {
-        // Pick the topmost visible heading.
         const visible = entries
           .filter(e => e.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
@@ -44,7 +40,7 @@ export function Toc({ headings }: Props) {
   return (
     <nav className="sticky top-20 max-h-[calc(100dvh-6rem)] overflow-y-auto py-6 pl-4 pr-2">
       <div className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground/70">
-        On this page
+        {t('onThisPage')}
       </div>
       <ul className="flex flex-col gap-1 border-l border-border">
         {headings.map(h => {

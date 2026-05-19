@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { useTheme } from 'next-themes';
+import { useTranslations } from 'next-intl';
 import dagre from 'dagre';
 import {
   ReactFlow,
@@ -21,13 +22,8 @@ import { parseFlowchart, type FlowDirection, type ParsedFlow, type NodeShape } f
 import { cn } from '@/lib/utils';
 
 interface Props {
-  /** Raw mermaid source. The component falls back to its `fallback` prop if
-   *  parsing fails so the renderer can defer to plain mermaid for syntax we
-   *  don't support yet. */
   chart: string;
-  /** Render this if our parser can't handle the source. */
   fallback?: React.ReactNode;
-  /** Container height for the inline view. */
   height?: number;
 }
 
@@ -50,11 +46,7 @@ const SHAPE_LABEL_CLASS: Record<NodeShape, string> = {
   diamond: '-rotate-45',
 };
 
-/** Per-node tinting based on a leading uppercase letter — gives the auto-laid
- *  graphs a bit of structure (Stripe-docs-style colored buckets) without
- *  having the author specify a category. */
 function autoTone(id: string, label: string): string {
-  // Use the longest run of leading letters as a "bucket key".
   const prefix = id.match(/^[A-Za-z]+/)?.[0]?.toUpperCase() ?? id;
   const seed = prefix.charCodeAt(0) % 6;
   const TONES = [
@@ -65,7 +57,7 @@ function autoTone(id: string, label: string): string {
     'border-rose-500/40 bg-rose-500/[0.06] text-rose-700 dark:text-rose-300',
     'border-zinc-500/40 bg-zinc-500/[0.06] text-zinc-700 dark:text-zinc-300',
   ];
-  void label; // keep signature stable
+  void label;
   return TONES[seed];
 }
 
@@ -92,7 +84,6 @@ function FlowNode({ data }: NodeProps<Node<{ label: string; shape: NodeShape; to
 
 const NODE_TYPES = { wiki: FlowNode };
 
-/** Run dagre to assign positions to the parsed flow. */
 function layout(flow: ParsedFlow): { nodes: Node[]; edges: Edge[] } {
   const g = new dagre.graphlib.Graph();
   g.setGraph({ rankdir: flow.direction, nodesep: 50, ranksep: 70, marginx: 20, marginy: 20 });
@@ -148,8 +139,6 @@ function Inner({ flow, height = 480 }: { flow: ParsedFlow; height?: number }) {
     <div
       className="relative size-full"
       style={{
-        // React Flow uses CSS vars for its palette — keep them in sync with
-        // our theme so the controls/background/handles look native.
         ['--xy-edge-stroke' as string]: 'hsl(var(--brand))',
         ['--xy-edge-stroke-selected' as string]: 'hsl(var(--brand))',
       }}
@@ -184,6 +173,7 @@ export function FlowDiagram({ chart, fallback, height = 480 }: Props) {
   const flow = useMemo(() => parseFlowchart(chart), [chart]);
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations('diagram');
 
   if (!flow) return fallback ?? null;
 
@@ -200,8 +190,8 @@ export function FlowDiagram({ chart, fallback, height = 480 }: Props) {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          aria-label="Open diagram fullscreen"
-          title="Open fullscreen"
+          aria-label={t('fullscreen')}
+          title={t('openFullscreen')}
           className="absolute right-2 top-2 z-10 inline-flex size-8 items-center justify-center rounded-md bg-background/80 text-muted-foreground opacity-0 shadow-sm backdrop-blur-sm transition-all hover:bg-background hover:text-foreground group-hover:opacity-100"
         >
           <Maximize2 className="size-3.5" />
@@ -214,6 +204,8 @@ export function FlowDiagram({ chart, fallback, height = 480 }: Props) {
 }
 
 function FullscreenFlow({ flow, onClose }: { flow: ParsedFlow; onClose: () => void }) {
+  const t = useTranslations('diagram');
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', onKey);
@@ -229,12 +221,12 @@ function FullscreenFlow({ flow, onClose }: { flow: ParsedFlow; onClose: () => vo
     <div className="fixed inset-0 z-50 flex flex-col bg-background/95 backdrop-blur-sm">
       <div className="flex items-center justify-between border-b border-border px-4 py-2">
         <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          Diagram viewer · drag · scroll = zoom
+          {t('viewer')} · {t('hint')}
         </span>
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close (Esc)"
+          aria-label={t('close')}
           className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         >
           ✕
