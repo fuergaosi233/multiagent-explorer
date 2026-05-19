@@ -5,7 +5,6 @@ import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
-import 'highlight.js/styles/github-dark.css';
 import { Mermaid } from './mermaid';
 import { FlowDiagram } from './flow-diagram';
 import { CodeBlock } from './code-block';
@@ -229,7 +228,7 @@ export function Markdown({ content, slug }: Props) {
 
       return (
         <CodeBlock lang={meta?.lang} source={source}>
-          <pre className="overflow-x-auto px-4 py-3 text-[12.5px] leading-relaxed text-zinc-100 [&_code]:bg-transparent [&_code]:p-0">
+          <pre className="overflow-x-auto px-4 py-3 text-[12.5px] leading-relaxed text-foreground [&_code]:bg-transparent [&_code]:p-0">
             {children}
           </pre>
         </CodeBlock>
