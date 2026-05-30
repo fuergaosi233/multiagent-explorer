@@ -16,7 +16,7 @@ export default defineConfig({
     timeout: 30_000,
   },
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:3100',
     trace: 'on-first-retry',
     // Navigations during dev-mode compilation can be slow.
     navigationTimeout: 60_000,
@@ -29,8 +29,11 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev',
-    port: 3000,
+    // Pin to a dedicated port so we don't collide with whatever the user
+    // already has running on :3000 (and silently get reuseExistingServer'd
+    // onto the wrong app).
+    command: 'npm run dev -- --port 3100',
+    port: 3100,
     // Cold `next dev` boot on this repo is well past 60s; allow up to 3 min.
     timeout: 180_000,
     reuseExistingServer: !process.env.CI,
