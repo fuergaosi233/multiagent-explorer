@@ -1,7 +1,8 @@
 'use client';
 import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { PATTERNS } from '@/data/patterns';
+import { useLocale, useTranslations } from 'next-intl';
+import { getPattern } from '@/data/patterns';
 import { useAnimationEngine } from '@/hooks/useAnimationEngine';
 import DiagramCanvas from '@/components/DiagramCanvas';
 import Controls from '@/components/Controls';
@@ -19,7 +20,9 @@ interface Props {
  * version exists.
  */
 export function AnimatedPattern({ patternId }: Props) {
-  const pattern = PATTERNS.find(p => p.id === patternId);
+  const locale = useLocale();
+  const pattern = getPattern(patternId, locale);
+  const t = useTranslations();
   const engine = useAnimationEngine(pattern ?? null);
 
   // Keyboard shortcuts scoped to the widget area
@@ -50,9 +53,11 @@ export function AnimatedPattern({ patternId }: Props) {
   return (
     <section className="flex flex-col gap-3 rounded-xl border border-border bg-card/40 p-4 shadow-sm">
       <header className="flex flex-wrap items-center gap-2">
-        <Badge variant="brand">Live visualization</Badge>
+        <Badge variant="brand">{t('diagram.viewer')}</Badge>
         <span className="text-[12px] text-muted-foreground">
-          Animated topology — press <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px]">Space</kbd> to play / pause
+          {locale === 'zh'
+            ? '动态拓扑 — 按 Space 播放 / 暂停'
+            : 'Animated topology — press <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px]">Space</kbd> to play / pause'}
         </span>
       </header>
 
@@ -61,7 +66,7 @@ export function AnimatedPattern({ patternId }: Props) {
       {pattern.variants && pattern.variants.length >= 2 && (
         <div className="variants flex flex-wrap items-center gap-2">
           <span className="font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-            Variant
+            {locale === 'zh' ? '变体' : 'Variant'}
           </span>
           {pattern.variants.map((v, i) => {
             const active = i === engine.variantIdx;
@@ -85,7 +90,7 @@ export function AnimatedPattern({ patternId }: Props) {
         </div>
       )}
 
-      <div className="caption-wrap flex min-h-[32px] items-center gap-3">
+      <div className="caption-wrap flex min-h-[32px] flex-col gap-1.5">
         <div className="step-no font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground whitespace-nowrap tabular-nums">
           <span className="cur text-brand font-semibold">{engine.step + 1}</span>
           <span className="opacity-50"> / {engine.timeline.length}</span>
@@ -97,7 +102,7 @@ export function AnimatedPattern({ patternId }: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="flex-1 text-[13px] leading-relaxed text-foreground [&_b]:font-semibold [&_b]:text-brand [&_code]:rounded [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.86em]"
+            className="text-[13px] leading-relaxed text-foreground [&_b]:font-semibold [&_b]:text-brand [&_code]:rounded [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.86em]"
             dangerouslySetInnerHTML={{ __html: engine.caption || '—' }}
           />
         </AnimatePresence>
@@ -119,4 +124,3 @@ export function AnimatedPattern({ patternId }: Props) {
     </section>
   );
 }
-

@@ -1,10 +1,6 @@
 /**
  * Mapping between animation pattern id (in data/patterns.ts) and wiki slug
  * (under content/wiki/patterns), plus the category each pattern belongs to.
- *
- * Categories follow the taxonomy from `content/wiki/taxonomy.md`, with a
- * `Specialized` bucket for patterns that don't slot into one of the five
- * main dimensions (composition, organization, simulation, learning).
  */
 
 export type PatternCategory =
@@ -29,7 +25,6 @@ export const PATTERN_TO_WIKI: Record<string, string> = {
   auction:                          'market-auction-contract-net',
   swarm:                            'peer-swarm',
   protocol:                         'protocol-mediated',
-  // Extras (data/patterns-extra.ts) — match the wiki slug directly.
   'agents-as-tools':                'agents-as-tools',
   'graph-workflow':                 'graph-workflow',
   'generator-critic':               'generator-critic',
@@ -116,8 +111,7 @@ export const PATTERN_CATEGORY: Record<string, PatternCategory> = Object.fromEntr
   PATTERN_CATEGORIES.flatMap(({ label, slugs }) => slugs.map(s => [s, label])),
 );
 
-/** Hex equivalents of CATEGORY_TONE — used by the dynamic OG image generator,
- *  which renders via Satori and can't use Tailwind classes. */
+/** Hex equivalents of CATEGORY_TONE — used by the dynamic OG image generator. */
 export const CATEGORY_HEX: Record<PatternCategory, string> = {
   Control:     '#f59e0b',
   Information: '#0ea5e9',
@@ -136,3 +130,21 @@ export const CATEGORY_TONE: Record<PatternCategory, string> = {
   Protocol:     'bg-rose-500/10 text-rose-700 border-rose-500/25 dark:text-rose-300',
   Specialized:  'bg-zinc-500/10 text-zinc-700 border-zinc-500/25 dark:text-zinc-300',
 };
+
+const CATEGORY_LABELS: Record<string, Record<string, string>> = {
+  zh: {
+    Control: '控制',
+    Information: '信息',
+    Decision: '决策',
+    Environment: '环境',
+    Protocol: '协议',
+    Specialized: '专用',
+  },
+};
+
+export function getCategoryLabel(category: PatternCategory, locale?: string): string {
+  if (locale === 'zh') {
+    return CATEGORY_LABELS.zh[category] ?? category;
+  }
+  return category;
+}

@@ -1,5 +1,5 @@
 import { getDocTitle } from './wiki';
-import { PATTERN_CATEGORIES } from './pattern-map';
+import { PATTERN_CATEGORIES, getCategoryLabel } from './pattern-map';
 
 export interface NavLeaf {
   type: 'doc';
@@ -25,9 +25,9 @@ export interface NavCategory {
 
 export type NavItem = NavLeaf | NavCategory;
 
-function leaf(slugStr: string, fallback?: string): NavLeaf {
+function leaf(slugStr: string, fallback?: string, locale?: string): NavLeaf {
   const slug = slugStr === '' ? [] : slugStr.split('/');
-  const label = getDocTitle(slug) ?? fallback ?? slugStr;
+  const label = getDocTitle(slug, locale) ?? fallback ?? slugStr;
   return {
     type: 'doc',
     slug,
@@ -38,67 +38,85 @@ function leaf(slugStr: string, fallback?: string): NavLeaf {
 
 /**
  * Build the patterns category content: each category becomes a group header
- * followed by the patterns belonging to it. This mirrors how proper docs
- * sites (Stripe, Linear, shadcn) organize many siblings — group label →
- * items. The category label itself navigates to /patterns (the overview).
+ * followed by the patterns belonging to it.
  */
-function buildPatternItems(): (NavLeaf | NavGroupLabel)[] {
+function buildPatternItems(locale?: string): (NavLeaf | NavGroupLabel)[] {
   const items: (NavLeaf | NavGroupLabel)[] = [];
   for (const cat of PATTERN_CATEGORIES) {
-    items.push({ type: 'group', label: cat.label });
+    items.push({ type: 'group', label: getCategoryLabel(cat.label, locale) });
     for (const slug of cat.slugs) {
-      items.push(leaf(`patterns/${slug}`));
+      items.push(leaf(`patterns/${slug}`, undefined, locale));
     }
   }
   return items;
 }
 
-export function getNav(): NavItem[] {
+const NAV_LABELS: Record<string, Record<string, string>> = {
+  en: {
+    home: 'Home',
+    taxonomy: 'Taxonomy',
+    decisionMatrix: 'Decision Matrix',
+    patterns: 'Patterns',
+    implementation: 'Implementation',
+    reference: 'Reference',
+  },
+  zh: {
+    home: '首页',
+    taxonomy: '分类体系',
+    decisionMatrix: '决策矩阵',
+    patterns: '模式',
+    implementation: '实现',
+    reference: '参考',
+  },
+};
+
+export function getNav(locale?: string): NavItem[] {
+  const L = NAV_LABELS[locale ?? 'en'] ?? NAV_LABELS.en;
   return [
-    leaf('', 'Home'),
-    leaf('taxonomy', 'Taxonomy'),
-    leaf('decision-matrix', 'Decision Matrix'),
+    leaf('', L.home, locale),
+    leaf('taxonomy', L.taxonomy, locale),
+    leaf('decision-matrix', L.decisionMatrix, locale),
     {
       type: 'category',
-      label: 'Patterns',
+      label: L.patterns,
       href: '/patterns',
-      items: buildPatternItems(),
+      items: buildPatternItems(locale),
     },
     {
       type: 'category',
-      label: 'Implementation',
+      label: L.implementation,
       items: [
-        leaf('implementation/production-runtime'),
-        leaf('implementation/orchestrator'),
-        leaf('implementation/observability'),
-        leaf('implementation/safety-guardrails'),
-        leaf('implementation/content-model'),
-        leaf('implementation/pattern-page-template'),
+        leaf('implementation/production-runtime', undefined, locale),
+        leaf('implementation/orchestrator', undefined, locale),
+        leaf('implementation/observability', undefined, locale),
+        leaf('implementation/safety-guardrails', undefined, locale),
+        leaf('implementation/content-model', undefined, locale),
+        leaf('implementation/pattern-page-template', undefined, locale),
       ],
     },
     {
       type: 'category',
-      label: 'Reference',
+      label: L.reference,
       items: [
-        leaf('reference/glossary'),
-        leaf('reference/references'),
+        leaf('reference/glossary', undefined, locale),
+        leaf('reference/references', undefined, locale),
       ],
     },
   ];
 }
 
 /** Flatten nav to its leaves in display order — for prev/next. */
-export function flatNav(): NavLeaf[] {
+export function flatNav(locale?: string): NavLeaf[] {
   const out: NavLeaf[] = [];
-  for (const item of getNav()) {
+  for (const item of getNav(locale)) {
     if (item.type === 'doc') out.push(item);
     else for (const it of item.items) if (it.type === 'doc') out.push(it);
   }
   return out;
 }
 
-export function getNeighbors(slug: string[]): { prev?: NavLeaf; next?: NavLeaf } {
-  const flat = flatNav();
+export function getNeighbors(slug: string[], locale?: string): { prev?: NavLeaf; next?: NavLeaf } {
+  const flat = flatNav(locale);
   const key = slug.join('/');
   const idx = flat.findIndex(d => d.slug.join('/') === key);
   if (idx < 0) return {};

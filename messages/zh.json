@@ -1,0 +1,87 @@
+{
+  "site": {
+    "name": "Multi-Agent Wiki / 多智能体百科",
+    "description": "多智能体交互模式的工程实践参考，涵盖分类体系与工程实现。",
+    "tagline": "模式 · 运行时 · 参考",
+    "footer": "Multi-Agent Wiki / 多智能体百科 — 工程知识库",
+    "keywords": [
+      "多智能体", "智能体", "大语言模型", "编排", "监管者", "交接",
+      "多智能体系统", "智能体模式", "AI 工程", "MCP", "A2A"
+    ]
+  },
+  "nav": {
+    "home": "首页",
+    "taxonomy": "分类体系",
+    "decisionMatrix": "决策矩阵",
+    "patterns": "模式",
+    "implementation": "实现",
+    "reference": "参考",
+    "language": "语言",
+    "switchTo": "切换为 {language}"
+  },
+  "wiki": {
+    "onThisPage": "本页目录",
+    "previous": "上一页",
+    "next": "下一页",
+    "editThisPage": "编辑本页 →",
+    "breadcrumb": {
+      "wiki": "Wiki",
+      "patterns": "模式",
+      "implementation": "实现",
+      "reference": "参考"
+    }
+  },
+  "notFound": {
+    "title": "页面未找到",
+    "description": "您查找的 Wiki 页面不存在。请浏览侧边栏，或直接跳转到以下页面：",
+    "links": {
+      "home": {
+        "label": "首页",
+        "sub": "概览与推荐路径"
+      },
+      "patterns": {
+        "label": "模式",
+        "sub": "29 种多智能体模式"
+      },
+      "taxonomy": {
+        "label": "分类体系",
+        "sub": "五维视角"
+      },
+      "decisionMatrix": {
+        "label": "决策矩阵",
+        "sub": "按任务选型"
+      }
+    }
+  },
+  "controls": {
+    "replay": "重播",
+    "prev": "上一步",
+    "pause": "暂停",
+    "play": "播放",
+    "next": "下一步",
+    "step": "步骤 {step}"
+  },
+  "diagram": {
+    "viewer": "图表查看器",
+    "zoomOut": "缩小 (-)",
+    "zoomIn": "放大 (+)",
+    "reset": "重置 (0)",
+    "close": "关闭 (Esc)",
+    "fullscreen": "全屏查看图表",
+    "openFullscreen": "打开全屏",
+    "hint": "滚动 = 缩放 · 拖拽 = 平移"
+  },
+  "code": {
+    "copied": "已复制",
+    "copyCode": "复制代码",
+    "copy": "复制"
+  },
+  "categories": {
+    "Control": "控制",
+    "Information": "信息",
+    "Decision": "决策",
+    "Environment": "环境",
+    "Protocol": "协议",
+    "Specialized": "专用"
+  }
+}

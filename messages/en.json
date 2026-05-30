@@ -1,0 +1,87 @@
+{
+  "site": {
+    "name": "Multi-Agent Wiki",
+    "description": "A working reference for multi-agent interaction patterns, classification, and engineering implementation.",
+    "tagline": "patterns · runtime · references",
+    "footer": "Multi-Agent Wiki — an engineering knowledge base.",
+    "keywords": [
+      "multi-agent", "agent", "LLM", "orchestration", "supervisor", "handoff",
+      "multi-agent system", "agent pattern", "AI engineering", "MCP", "A2A"
+    ]
+  },
+  "nav": {
+    "home": "Home",
+    "taxonomy": "Taxonomy",
+    "decisionMatrix": "Decision Matrix",
+    "patterns": "Patterns",
+    "implementation": "Implementation",
+    "reference": "Reference",
+    "language": "Language",
+    "switchTo": "Switch to {language}"
+  },
+  "wiki": {
+    "onThisPage": "On this page",
+    "previous": "Previous",
+    "next": "Next",
+    "editThisPage": "Edit this page →",
+    "breadcrumb": {
+      "wiki": "Wiki",
+      "patterns": "Patterns",
+      "implementation": "Implementation",
+      "reference": "Reference"
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The wiki page you're looking for doesn't exist. Browse the sidebar, or jump straight to one of these:",
+    "links": {
+      "home": {
+        "label": "Home",
+        "sub": "Overview + recommended paths"
+      },
+      "patterns": {
+        "label": "Patterns",
+        "sub": "29 multi-agent patterns"
+      },
+      "taxonomy": {
+        "label": "Taxonomy",
+        "sub": "5-dimensional view"
+      },
+      "decisionMatrix": {
+        "label": "Decision Matrix",
+        "sub": "Pick by task"
+      }
+    }
+  },
+  "controls": {
+    "replay": "Replay",
+    "prev": "Prev",
+    "pause": "Pause",
+    "play": "Play",
+    "next": "Next",
+    "step": "Step {step}"
+  },
+  "diagram": {
+    "viewer": "Diagram viewer",
+    "zoomOut": "Zoom out (-)",
+    "zoomIn": "Zoom in (+)",
+    "reset": "Reset (0)",
+    "close": "Close (Esc)",
+    "fullscreen": "Open diagram fullscreen",
+    "openFullscreen": "Open fullscreen",
+    "hint": "scroll = zoom · drag = pan"
+  },
+  "code": {
+    "copied": "Copied",
+    "copyCode": "Copy code",
+    "copy": "Copy"
+  },
+  "categories": {
+    "Control": "Control",
+    "Information": "Information",
+    "Decision": "Decision",
+    "Environment": "Environment",
+    "Protocol": "Protocol",
+    "Specialized": "Specialized"
+  }
+}

@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Check, Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -34,13 +35,9 @@ const LANG_LABEL: Record<string, string> = {
   txt: 'Text',
 };
 
-/**
- * Frame a fenced code block with a small header (language label + copy
- * button) and a dark body. Keeps non-mermaid code blocks from looking like
- * naked text dumps inside an otherwise polished article body.
- */
 export function CodeBlock({ lang, source, children }: Props) {
   const [copied, setCopied] = useState(false);
+  const t = useTranslations('code');
   const label = lang ? (LANG_LABEL[lang.toLowerCase()] ?? lang.toUpperCase()) : 'Code';
 
   async function copy() {
@@ -62,7 +59,7 @@ export function CodeBlock({ lang, source, children }: Props) {
         <button
           type="button"
           onClick={copy}
-          aria-label={copied ? 'Copied' : 'Copy code'}
+          aria-label={copied ? t('copied') : t('copyCode')}
           className={cn(
             'inline-flex h-6 items-center gap-1 rounded px-1.5 text-[10px] font-medium transition-colors',
             copied
@@ -71,7 +68,7 @@ export function CodeBlock({ lang, source, children }: Props) {
           )}
         >
           {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
-          <span className="hidden sm:inline">{copied ? 'Copied' : 'Copy'}</span>
+          <span className="hidden sm:inline">{copied ? t('copied') : t('copy')}</span>
         </button>
       </div>
       {children}

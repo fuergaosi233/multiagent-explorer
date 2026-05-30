@@ -1,6 +1,7 @@
 'use client';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { NavLeaf } from '@/lib/wiki-nav';
 import type { Heading } from '@/lib/markdown-utils';
@@ -23,14 +24,11 @@ interface Props {
   editPath?: string;
 }
 
-/**
- * Article body for a wiki page. Top nav + left sidebar live in the root
- * layout so they persist across navigation — this component owns only the
- * main content column and the optional right-side TOC.
- */
 export function WikiShell({
   title, description, content, slug, prev, next, widget, breadcrumbs, headings, category, editPath,
 }: Props) {
+  const t = useTranslations();
+
   return (
     <>
       <main className="min-w-0 flex-1 py-10 lg:pl-10 lg:pr-8">
@@ -66,7 +64,7 @@ export function WikiShell({
                   CATEGORY_TONE[category],
                 )}
               >
-                {category}
+                {t(`categories.${category}`)}
               </span>
             )}
             <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
@@ -92,7 +90,7 @@ export function WikiShell({
                 >
                   <span className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
                     <ChevronLeft className="size-3" />
-                    Previous
+                    {t('wiki.previous')}
                   </span>
                   <span className="text-sm font-medium text-foreground transition-colors group-hover:text-brand">
                     {prev.label}
@@ -105,7 +103,7 @@ export function WikiShell({
                   className="group flex flex-col items-end gap-1 rounded-lg border border-border p-3 text-right transition-colors hover:border-brand/40 hover:bg-accent/30"
                 >
                   <span className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-                    Next
+                    {t('wiki.next')}
                     <ChevronRight className="size-3" />
                   </span>
                   <span className="text-sm font-medium text-foreground transition-colors group-hover:text-brand">
@@ -117,7 +115,7 @@ export function WikiShell({
           )}
 
           <footer className="mt-16 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-6 text-[11px] text-muted-foreground">
-            <span>Multi-Agent Wiki — an engineering knowledge base.</span>
+            <span>{t('site.footer')}</span>
             {editPath && (
               <a
                 href={`https://github.com/fuergaosi233/multiagent-explorer/edit/main/${editPath}`}
@@ -125,7 +123,7 @@ export function WikiShell({
                 rel="noopener noreferrer"
                 className="font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
-                Edit this page →
+                {t('wiki.editThisPage')}
               </a>
             )}
           </footer>

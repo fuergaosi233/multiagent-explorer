@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { Maximize, Minus, Plus, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -16,12 +17,9 @@ const MIN_SCALE = 0.3;
 const MAX_SCALE = 6;
 const STEP = 1.2;
 
-/**
- * Full-screen mermaid viewer with mouse-wheel zoom, drag-pan, and a small
- * floating toolbar. Opens via the Maximize button on the inline diagram.
- */
 export function MermaidModal({ chart, open, onClose }: Props) {
   const { resolvedTheme } = useTheme();
+  const t = useTranslations('diagram');
   const svgHostRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const [transform, setTransform] = useState({ scale: 1, x: 0, y: 0 });
@@ -30,7 +28,6 @@ export function MermaidModal({ chart, open, onClose }: Props) {
 
   useEffect(() => setMounted(true), []);
 
-  // Render the mermaid SVG once per open + theme change.
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
@@ -49,7 +46,6 @@ export function MermaidModal({ chart, open, onClose }: Props) {
         const { svg } = await mermaid.render(id, chart);
         if (!cancelled && svgHostRef.current) {
           svgHostRef.current.innerHTML = svg;
-          // Make the rendered SVG fill its viewport so transform applies sensibly.
           const inner = svgHostRef.current.querySelector('svg');
           if (inner) {
             inner.removeAttribute('width');
@@ -77,7 +73,6 @@ export function MermaidModal({ chart, open, onClose }: Props) {
       if (originX == null || originY == null) {
         return { ...prev, scale: nextScale };
       }
-      // Zoom anchored to the mouse position.
       const ratio = nextScale / prev.scale;
       return {
         scale: nextScale,
@@ -87,10 +82,8 @@ export function MermaidModal({ chart, open, onClose }: Props) {
     });
   }, []);
 
-  // Reset transform when the chart or open state changes.
   useEffect(() => { if (open) reset(); }, [chart, open, reset]);
 
-  // Keyboard + scroll-lock when open.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -108,7 +101,6 @@ export function MermaidModal({ chart, open, onClose }: Props) {
     };
   }, [open, onClose, reset, zoomBy]);
 
-  // Wheel handler must use non-passive listener so we can preventDefault.
   useEffect(() => {
     const vp = viewportRef.current;
     if (!vp || !open) return;
@@ -148,24 +140,22 @@ export function MermaidModal({ chart, open, onClose }: Props) {
           className="fixed inset-0 z-50 flex flex-col bg-background/95 backdrop-blur-sm"
           onClick={onClose}
         >
-          {/* Top bar */}
           <div
             className="flex items-center justify-between border-b border-border px-4 py-2 text-foreground"
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              Diagram viewer
+              {t('viewer')}
               <span className="tabular-nums text-foreground/80">{Math.round(transform.scale * 100)}%</span>
             </div>
             <div className="flex items-center gap-1">
-              <ToolbarButton onClick={() => zoomBy(1 / STEP)} label="Zoom out (-)"><Minus className="size-4" /></ToolbarButton>
-              <ToolbarButton onClick={() => zoomBy(STEP)} label="Zoom in (+)"><Plus className="size-4" /></ToolbarButton>
-              <ToolbarButton onClick={reset} label="Reset (0)"><Maximize className="size-4" /></ToolbarButton>
-              <ToolbarButton onClick={onClose} label="Close (Esc)"><X className="size-4" /></ToolbarButton>
+              <ToolbarButton onClick={() => zoomBy(1 / STEP)} label={t('zoomOut')}><Minus className="size-4" /></ToolbarButton>
+              <ToolbarButton onClick={() => zoomBy(STEP)} label={t('zoomIn')}><Plus className="size-4" /></ToolbarButton>
+              <ToolbarButton onClick={reset} label={t('reset')}><Maximize className="size-4" /></ToolbarButton>
+              <ToolbarButton onClick={onClose} label={t('close')}><X className="size-4" /></ToolbarButton>
             </div>
           </div>
 
-          {/* Viewport */}
           <div
             ref={viewportRef}
             className={cn(
@@ -191,12 +181,11 @@ export function MermaidModal({ chart, open, onClose }: Props) {
             </div>
           </div>
 
-          {/* Footer hint */}
           <div
             className="border-t border-border px-4 py-2 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground"
             onClick={e => e.stopPropagation()}
           >
-            scroll = zoom · drag = pan · <kbd className="rounded border border-border bg-muted px-1.5 py-0.5">+</kbd> / <kbd className="rounded border border-border bg-muted px-1.5 py-0.5">−</kbd> / <kbd className="rounded border border-border bg-muted px-1.5 py-0.5">0</kbd> / <kbd className="rounded border border-border bg-muted px-1.5 py-0.5">Esc</kbd>
+            {t('diagram.hint')} · <kbd className="rounded border border-border bg-muted px-1.5 py-0.5">+</kbd> / <kbd className="rounded border border-border bg-muted px-1.5 py-0.5">−</kbd> / <kbd className="rounded border border-border bg-muted px-1.5 py-0.5">0</kbd> / <kbd className="rounded border border-border bg-muted px-1.5 py-0.5">Esc</kbd>
           </div>
         </motion.div>
       )}

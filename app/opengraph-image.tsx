@@ -68,7 +68,7 @@ export default function Image() {
               maxWidth: 1000,
             }}
           >
-            Multi-Agent Wiki
+            {SITE_NAME}
           </div>
           <div
             style={{
