@@ -51,9 +51,9 @@ export function CodeBlock({ lang, source, children }: Props) {
   }
 
   return (
-    <div className="my-4 overflow-hidden rounded-lg border border-zinc-800 bg-zinc-950 shadow-sm">
-      <div className="flex items-center justify-between border-b border-zinc-800/70 bg-zinc-900/70 px-3 py-1.5">
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
+    <div className="my-4 overflow-hidden rounded-lg border border-border bg-muted shadow-sm">
+      <div className="flex items-center justify-between border-b border-border/70 bg-muted/70 px-3 py-1.5">
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
           {label}
         </span>
         <button
@@ -63,8 +63,8 @@ export function CodeBlock({ lang, source, children }: Props) {
           className={cn(
             'inline-flex h-6 items-center gap-1 rounded px-1.5 text-[10px] font-medium transition-colors',
             copied
-              ? 'text-emerald-300'
-              : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100',
+              ? 'text-success'
+              : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
           )}
         >
           {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
