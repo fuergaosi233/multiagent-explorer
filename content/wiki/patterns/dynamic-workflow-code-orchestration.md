@@ -20,18 +20,21 @@ Dynamic Workflow moves the plan into an executable script. The script holds loop
 ```mermaid
 graph LR
   User -->|large task| Claude
+  User -->|confirm phases & cost| Approval
   Claude -->|phase plan| Approval
   Claude -->|write JS| Script
   Approval -->|allow run| Runtime
-  Script -->|execute| Runtime
-  Runtime -->|spawn| Pool[Subagent Pool]
-  Pool -->|results| Runtime
-  Pool -->|claims| Verify[Verifier Agents]
-  Verify -->|checked| Runtime
+  Runtime -->|execute| Script
+  Script -->|control flow| Runtime
+  Runtime -->|spawn| Workers[Worker Agents]
+  Workers -->|findings| Runtime
+  Runtime -->|spawn| Verifiers[Verifier Agents]
+  Verifiers -->|verdicts| Runtime
+  Runtime -->|spawn| Synth[Synthesis Agent]
+  Synth -->|report| Runtime
   Runtime -->|persist| Checkpoint
   Checkpoint -.->|resume| Runtime
-  Verify -->|accepted| Report
-  Runtime -->|synthesis| Report
+  Runtime -->|finalize / return| Report
 ```
 
 ## Control Semantics
