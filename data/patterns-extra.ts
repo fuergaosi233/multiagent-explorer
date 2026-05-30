@@ -605,4 +605,173 @@ export const EXTRA_PATTERNS: Pattern[] = [
     risks:'Misspecified reward. Sim-to-real gap. Conflating MARL with general LLM orchestration.',
     example:{ tag:'PAPER', body:'<code>MAPPO</code> / <code>QMIX</code> — train cooperative agents with shared critic, deploy decentralized.' },
   },
+
+  /* ─── dynamic-workflow ─── */
+  {
+    id: 'dynamic-workflow',
+    group: 'flow',
+    num: '30',
+    grpLabel: 'WORKFLOW ORCHESTRATION',
+    title: 'Dynamic Workflow',
+    titleEn: 'Plan-in-code · script orchestrates subagents',
+    titleZh: '动态工作流：把编排逻辑写进代码',
+    aliases: 'Claude Code dynamic workflows / code-orchestrated subagents / script-held plan / workflow runtime',
+    mechanism:
+      'Claude writes an orchestration script for a large task. The script holds loops, branches, fan-out, intermediate variables, cross-checking, and convergence logic while subagents perform the actual reading, editing, shell, web, or MCP work.',
+    mechanismZh:
+      'Claude 为大任务生成一段编排脚本。脚本持有循环、分支、扇出、中间变量、交叉验证和收敛逻辑；真正读写文件、跑命令、查资料、调用 MCP 的工作由子智能体执行。',
+    nodes: [
+      { id: 'user',       x: 28,  y: 250, w: 100, label: 'User', kind: 'user' },
+      { id: 'claude',     x: 180, y: 85,  w: 170, label: 'Claude', sub: 'writes workflow', kind: 'accent' },
+      { id: 'approve',    x: 180, y: 250, w: 170, label: 'Approval', sub: 'phases · cost', kind: 'plain' },
+      { id: 'script',     x: 395, y: 85,  w: 190, label: 'Workflow Script', sub: 'loop · branch · fan-out', kind: 'accent' },
+      { id: 'runtime',    x: 395, y: 250, w: 190, label: 'Runtime', sub: 'background runner', kind: 'bus' },
+      { id: 'pool',       x: 640, y: 70,  w: 190, label: 'Subagent Pool', sub: '10s–100s workers' },
+      { id: 'verify',     x: 640, y: 250, w: 190, label: 'Verifier Agents', sub: 'cross-check · refute' },
+      { id: 'checkpoint', x: 640, y: 420, w: 190, label: 'Checkpoint', sub: 'cached results', kind: 'store' },
+      { id: 'final',      x: 805, y: 250, w: 78,  label: 'Report', kind: 'dark' },
+    ],
+    edges: {
+      'u-c':  { from: 'user', to: 'claude', label: 'large task', curve: -24 },
+      'c-a':  { from: 'claude', to: 'approve', label: 'phase plan' },
+      'c-s':  { from: 'claude', to: 'script', label: 'write JS', curve: -18 },
+      'a-r':  { from: 'approve', to: 'runtime', label: 'allow run' },
+      's-r':  { from: 'script', to: 'runtime', label: 'execute' },
+      'r-p':  { from: 'runtime', to: 'pool', label: 'spawn', curve: -20 },
+      'p-r':  { from: 'pool', to: 'runtime', label: 'results', curve: 20 },
+      'p-v':  { from: 'pool', to: 'verify', label: 'claims' },
+      'v-r':  { from: 'verify', to: 'runtime', label: 'checked', curve: 20 },
+      'r-cp': { from: 'runtime', to: 'checkpoint', label: 'persist', curve: 20 },
+      'cp-r': { from: 'checkpoint', to: 'runtime', label: 'resume', dashed: true, curve: -20 },
+      'v-f':  { from: 'verify', to: 'final', label: 'accepted', curve: -10 },
+      'r-f':  { from: 'runtime', to: 'final', label: 'synthesis', curve: 18 },
+    },
+    timeline: [
+      {
+        caption: '<b>User</b> asks for a task too large for one conversational pass.',
+        captionZh: '<b>用户</b>提出一个单轮对话难以稳定完成的大任务。',
+        fire: ['u-c'],
+        activate: ['user', 'claude'],
+      },
+      {
+        caption: '<b>Claude</b> turns the plan into a workflow script instead of coordinating everything turn by turn.',
+        captionZh: '<b>Claude</b>不再逐轮临场调度，而是把计划写成 workflow 脚本。',
+        fire: ['c-s'],
+        activate: ['claude', 'script'],
+      },
+      {
+        caption: 'The user sees phases, expected scope, and cost warning before the run starts.',
+        captionZh: '运行前展示阶段、范围和成本提示，用户确认后再开始。',
+        fire: ['c-a'],
+        activate: ['claude', 'approve'],
+      },
+      {
+        caption: '<b>Runtime</b> executes the script in the background; the main session stays responsive.',
+        captionZh: '<b>Runtime</b>在后台执行脚本，主会话保持可响应。',
+        fire: ['a-r', 's-r'],
+        activate: ['approve', 'script', 'runtime'],
+      },
+      {
+        caption: 'The script fans out many <b>subagents</b>. Agents do the actual reading, editing, shell, web, or MCP work.',
+        captionZh: '脚本扇出多个<b>子智能体</b>；真正读写、命令、Web、MCP 调用由子智能体完成。',
+        fire: ['r-p'],
+        activate: ['runtime', 'pool'],
+      },
+      {
+        caption: 'Intermediate results return to script variables and runtime state, not directly into the main conversation.',
+        captionZh: '中间结果先回到脚本变量和 runtime 状态，而不是全部塞进主上下文。',
+        fire: ['p-r', 'r-cp'],
+        activate: ['pool', 'runtime', 'checkpoint'],
+      },
+      {
+        caption: 'Verifier agents cross-check findings and try to refute weak claims before synthesis.',
+        captionZh: 'Verifier agents 交叉检查发现，并在综合前反驳不稳的结论。',
+        fire: ['p-v', 'v-r'],
+        activate: ['pool', 'verify', 'runtime'],
+      },
+      {
+        caption: 'The workflow iterates until results converge or the budget / stop condition is reached.',
+        captionZh: 'Workflow 持续迭代，直到结果收敛或触达预算 / 停止条件。',
+        fire: ['r-p', 'p-r', 'p-v', 'v-r'],
+        activate: ['runtime', 'pool', 'verify'],
+      },
+      {
+        caption: 'Only the coordinated, checked report returns to the user-facing session.',
+        captionZh: '最终只有经过编排和验证的报告回到用户会话。',
+        fire: ['r-f', 'v-f'],
+        activate: ['runtime', 'verify', 'final'],
+      },
+    ],
+    fit:
+      'Codebase-wide audits · large migrations · cross-checked research · plan stress tests · repeated engineering workflows you want to save and rerun.',
+    fitZh:
+      '全代码库审计、大规模迁移、交叉验证研究、方案压力测试，以及需要保存并复跑的工程流程。',
+    risks:
+      'Token and rate-limit cost multiply quickly. Poor decomposition creates correlated failures. Permissions, allowlists, trace logs, checkpoints, and rollback must be designed before long runs.',
+    risksZh:
+      'Token 和 rate limit 成本会快速放大；拆解差会导致相关性失败；长任务前必须设计权限、allowlist、trace、checkpoint 和 rollback。',
+    example: {
+      tag: 'CONCEPTUAL WORKFLOW',
+      body:
+        '<code>workflow</code> writes the orchestration; <code>agent()</code> calls spawn workers; <code>parallel()</code> waits at a barrier; <code>pipeline()</code> streams items across stages; verifiers filter claims before the final report.',
+    },
+    exampleZh: {
+      tag: '概念伪代码',
+      body:
+        '<code>workflow</code> 保存编排；<code>agent()</code> 生成 worker；<code>parallel()</code> 形成 barrier；<code>pipeline()</code> 让 item 流水线穿过阶段；verifier 在最终报告前过滤结论。',
+    },
+    code: {
+      lang: 'ts',
+      snippet:
+`// Conceptual pseudo-code, not a public Claude API contract.
+export default async function workflow(ctx) {
+  const files = await ctx.agent("map-codebase", ctx.goal)
+
+  const findings = await ctx.parallel(
+    files.map(file => ctx.agent("audit-file", { file }))
+  )
+
+  const checked = await ctx.parallel(
+    findings.map(f => ctx.agent("adversarial-review", f))
+  )
+
+  return ctx.synthesize(checked.filter(x => x.verified))
+}`,
+    },
+    variants: [
+      { label: 'Default', labelZh: '默认', sub: 'script → fan-out → verify', subZh: '脚本 → 扇出 → 验证', timeline: null },
+      {
+        label: 'Parallel barrier', labelZh: '并行屏障', sub: 'wait for all', subZh: '等待全部完成',
+        timeline: [
+          { caption: 'Runtime creates one batch of independent subtasks.', captionZh: 'Runtime 创建一批互相独立的子任务。', activate: ['runtime'] },
+          { caption: 'All workers start together.', captionZh: '所有 worker 同时开始。', fire: ['r-p'], activate: ['runtime', 'pool'] },
+          { caption: 'Barrier semantics: aggregation waits for every worker to finish.', captionZh: 'Barrier 语义：聚合必须等待所有 worker 完成。', activate: ['pool'], duration: 1800 },
+          { caption: 'The batch returns to runtime for dedupe and merge.', captionZh: '整批结果回到 runtime 做去重与合并。', fire: ['p-r'], activate: ['pool', 'runtime'] },
+          { caption: 'Merged claims go through verifier agents.', captionZh: '合并后的 claims 进入 verifier agents。', fire: ['p-v', 'v-r'], activate: ['runtime', 'verify'] },
+          { caption: 'Final report contains only claims that survive cross-checking.', captionZh: '最终报告只保留通过交叉验证的结论。', fire: ['r-f', 'v-f'], activate: ['final'] },
+        ],
+      },
+      {
+        label: 'Pipeline stream', labelZh: '流水线', sub: 'item by item', subZh: '逐 item 流动',
+        timeline: [
+          { caption: 'The script creates a multi-stage pipeline: discover → audit → verify → synthesize.', captionZh: '脚本创建多阶段流水线：discover → audit → verify → synthesize。', activate: ['script', 'runtime'] },
+          { caption: 'Item A enters stage 1 while later items are still being discovered.', captionZh: 'Item A 进入第一阶段时，后续 item 仍在发现中。', fire: ['r-p'], activate: ['runtime', 'pool'] },
+          { caption: 'Completed items flow to verifier without waiting for the entire batch.', captionZh: '已完成 item 直接流向 verifier，不等待整批结束。', fire: ['p-v'], activate: ['pool', 'verify'] },
+          { caption: 'Runtime keeps partial state and checkpoints progress as items move.', captionZh: 'Runtime 持有部分状态，并随着 item 流动 checkpoint。', fire: ['v-r', 'r-cp'], activate: ['verify', 'runtime', 'checkpoint'] },
+          { caption: 'Pipeline improves latency when slow items should not block fast items.', captionZh: '当慢 item 不应阻塞快 item 时，pipeline 降低尾部等待。', activate: ['runtime', 'pool', 'verify'] },
+          { caption: 'Synthesis starts from verified partial results.', captionZh: '综合可以从已验证的部分结果开始。', fire: ['r-f'], activate: ['runtime', 'final'] },
+        ],
+      },
+      {
+        label: 'Adversarial review', labelZh: '对抗验证', sub: 'break weak claims', subZh: '反驳弱结论',
+        timeline: [
+          { caption: 'Workers produce independent findings from different slices of the task.', captionZh: 'Workers 从不同切片产出相互独立的发现。', fire: ['r-p', 'p-r'], activate: ['runtime', 'pool'] },
+          { caption: 'Each finding is sent to a verifier that tries to disprove it.', captionZh: '每个 finding 发送给 verifier，由 verifier 尝试反驳。', fire: ['p-v'], activate: ['pool', 'verify'] },
+          { caption: 'Weak or unsupported claims are filtered before they reach the final context.', captionZh: '薄弱或无依据的 claims 在进入最终上下文前被过滤。', fire: ['v-r'], activate: ['verify', 'runtime'] },
+          { caption: 'Runtime reruns disputed areas or asks for narrower evidence.', captionZh: 'Runtime 对争议区域复跑，或要求更窄的证据。', fire: ['r-p', 'p-v'], activate: ['runtime', 'pool', 'verify'] },
+          { caption: 'Converged claims are synthesized into a single answer.', captionZh: '收敛后的 claims 被综合成单一答案。', fire: ['r-f', 'v-f'], activate: ['runtime', 'verify', 'final'] },
+        ],
+      },
+    ],
+  },
 ];

@@ -1,6 +1,6 @@
 # Multi-Agent Wiki
 
-An engineering knowledge base for **multi-agent interaction patterns, classification, and implementation**. 29 patterns across 5 dimensions (control, information flow, decision, environment, protocols), 6 implementation guides, and a glossary — every pattern page with mermaid topology, when-to-use guidance, risks, pseudocode, and trace events. 13 of the patterns also embed an animated live visualization.
+An engineering knowledge base for **multi-agent interaction patterns, workflow orchestration, classification, and implementation**. 30 patterns across 7 categories (control, workflow, information flow, decision, environment, protocols, specialized), a dedicated Dynamic Workflows section, 6 implementation guides, and a glossary — every pattern page with mermaid topology, when-to-use guidance, risks, pseudocode, and trace events. Each pattern also embeds an animated live visualization.
 
 Built with Next.js 16 (App Router) + React 19, shadcn-style design tokens, Geist fonts, framer-motion, react-markdown, and mermaid.
 
@@ -51,7 +51,8 @@ components/
   top-nav.tsx, theme-toggle.tsx, logo.tsx
 content/wiki/           — all markdown source (single source of truth)
   index.md, taxonomy.md, decision-matrix.md
-  patterns/             — 29 pattern docs
+  patterns/             — 30 pattern docs
+  workflows/            — Dynamic workflow deep dives, orchestration primitives, governance, case studies
   implementation/       — 6 implementation guides
   reference/            — glossary, references
 data/patterns.ts        — animated pattern data (drives 13 of the wiki patterns)
@@ -75,8 +76,9 @@ Both are generated at build time from `content/wiki/` via route handlers (`dynam
 ## Adding a new pattern page
 
 1. Drop a markdown file under `content/wiki/patterns/<slug>.md` following the template in [`content/wiki/implementation/pattern-page-template.md`](content/wiki/implementation/pattern-page-template.md).
-2. Register the slug in `lib/wiki-nav.ts` so it appears in the sidebar.
-3. (Optional) If the pattern has an animated counterpart in `data/patterns.ts`, add the mapping to `lib/pattern-map.ts` and the live visualization widget will embed automatically.
+2. Add the slug to `PATTERN_CATEGORIES` in `lib/pattern-map.ts` under the appropriate category — this is what drives the sidebar grouping in `lib/wiki-nav.ts`.
+3. (Optional) If the pattern has an animated counterpart in `data/patterns.ts` or `data/patterns-extra.ts`, add the mapping to `PATTERN_TO_WIKI` in `lib/pattern-map.ts` and the live visualization widget will embed automatically.
+4. (Optional) Add a Chinese version under `content/wiki-zh/patterns/<slug>.md`. At minimum a short Chinese summary keeps the Chinese sidebar from breaking.
 
 ## Deploying to Vercel
 

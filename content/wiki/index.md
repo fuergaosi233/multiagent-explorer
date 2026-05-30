@@ -16,6 +16,7 @@ A working reference for **multi-agent interaction patterns, classification, and 
 
 - New here → start with the [Taxonomy](taxonomy)
 - Picking a design → jump to the [Decision Matrix](decision-matrix)
+- Running code-orchestrated subagents at scale → read [Dynamic Workflows Overview](workflows)
 - Building a platform → read [Production Runtime Architecture](implementation/production-runtime)
 - Adding a new pattern → use the [Pattern Page Template](implementation/pattern-page-template)
 - Looking up a term → consult the [Glossary](reference/glossary)
@@ -29,10 +30,17 @@ A **multi-agent system** is composed of multiple agents — each with its own re
 ```mermaid
 flowchart TD
   A[Multi-Agent Wiki] --> B[Control structure]
+  A --> G[Workflow orchestration]
   A --> C[Information flow]
   A --> D[Decision making]
   A --> E[Execution environment]
   A --> F[Protocol interconnect]
+
+  G --> G1[Graph / State Machine]
+  G --> G2[Dynamic Workflow]
+  G --> G3[Parallel Barrier]
+  G --> G4[Pipeline Stream]
+  G --> G5[Checkpoint / Resume]
 
   B --> B1[Supervisor / Manager]
   B --> B2[Agents-as-tools]
@@ -74,6 +82,7 @@ Multi-agent isn't just "many LLMs talking." In production the questions that act
 - How is context isolated between agents?
 - How are conflicting outputs merged?
 - How do tasks recover, cancel, retry, and trace?
+- **When does the plan live in code rather than conversation?**
 - Which actions need human approval?
 - Which capabilities are exposed over MCP / A2A / Agent Client Protocol?
 

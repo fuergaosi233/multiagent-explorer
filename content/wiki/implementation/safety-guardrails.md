@@ -49,6 +49,43 @@ const shellPolicy = {
 - `risk` — severity tier
 - `timeout` — what happens if approval times out
 
+## Workflow permissions, approval, and rollback
+
+A Dynamic Workflow can spawn dozens or hundreds of subagents with the same tool allowlist as its parent session. The guardrails for a single agent do not scale linearly — they multiply with the fan-out.
+
+### Allowlist inheritance
+
+Subagents spawned by a workflow script inherit the parent session's tool allowlist. A workflow with `edit` and `bash` allowed gives every subagent the same write and shell access. Before running a wide-fan-out workflow:
+
+1. Audit the current allowlist — is every entry intentional?
+2. Consider running the workflow in a session with a narrower allowlist.
+3. Pre-approve expected tool categories so mid-run prompts don't block the workflow.
+
+### Approval gate
+
+The workflow script itself is a first-class artifact. The approval card for a workflow should include:
+
+- The phase list and per-phase fan-out estimate.
+- The token budget estimate.
+- The raw script source.
+- The set of tool categories the script's subagents may invoke.
+- The set of file paths the script may write to.
+
+Treat workflow approval the same way you would treat a production migration script approval.
+
+### Rollback design
+
+Workflows that write files at scale need rollback designed before the run. Minimum bar:
+
+- Run inside a git worktree, never directly on main. See [Workspace Isolation](/patterns/workspace-isolation).
+- Have agents output to a branch; require a human merge gate.
+- Split workflows into discovery + approval + execution phases for high-risk operations.
+- Support a dry-run mode where write tools are disabled and the script's intended actions are emitted as plan output.
+
+### Admin disable
+
+For managed Claude Code deployments, admins can disable Dynamic Workflows or restrict them by user / project. This is the right control for environments where the cost or permission risk of workflows exceeds the operational benefit.
+
 ## Common failures
 
 1. Sub-agents call tools the host agent doesn't know about.

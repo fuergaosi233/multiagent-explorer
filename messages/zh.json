@@ -14,6 +14,7 @@
     "taxonomy": "分类体系",
     "decisionMatrix": "决策矩阵",
     "patterns": "模式",
+    "workflows": "工作流",
     "implementation": "实现",
     "reference": "参考",
     "language": "语言",
@@ -27,6 +28,7 @@
     "breadcrumb": {
       "wiki": "Wiki",
       "patterns": "模式",
+      "workflows": "工作流",
       "implementation": "实现",
       "reference": "参考"
     }
@@ -78,6 +80,7 @@
   },
   "categories": {
     "Control": "控制",
+    "Workflow": "工作流",
     "Information": "信息",
     "Decision": "决策",
     "Environment": "环境",

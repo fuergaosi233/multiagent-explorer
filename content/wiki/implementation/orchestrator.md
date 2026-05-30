@@ -87,6 +87,22 @@ export type Checkpoint = {
 };
 ```
 
+## From prompt orchestration to script-held orchestration
+
+A prompt-orchestrated supervisor and a script-held workflow are both orchestrators, but they make different engineering tradeoffs.
+
+| Aspect | Prompt orchestrator | Script-held orchestrator (Dynamic Workflow) |
+|---|---|---|
+| Plan representation | Implicit in each turn of the supervisor agent | Explicit JavaScript artifact |
+| Iteration source | Model re-derives next step each turn | Loop / branch baked into the script |
+| Intermediate state | Lives in the supervisor's context window | Lives in script variables and runtime |
+| Recoverability | Bounded by context retention | Checkpoint primitive enables resume |
+| Reuse | Conversation-only | Save and rerun (`.claude/workflows/`) |
+| Observability granularity | Turn-level traces | Phase + per-agent + per-claim traces |
+| Failure mode | Plan drift as context fills | Script bugs, but the bug is inspectable |
+
+When the orchestrator must hold a plan across many fan-out calls and survive an interruption, a script-held design pays for itself. When the task is short and interactive, a prompt orchestrator stays simpler. See the [Dynamic Workflow](/patterns/dynamic-workflow-code-orchestration) pattern page for the full topology.
+
 ## Common mistakes
 
 - The orchestrator does everything itself — devolves into a single agent.

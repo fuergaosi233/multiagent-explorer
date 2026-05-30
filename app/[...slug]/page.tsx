@@ -66,6 +66,7 @@ export default async function WikiPage({ params }: Props) {
     const sectionHref = `/${slug[0]}`;
     breadcrumbs.push({
       label: slug[0] === 'patterns' ? t('patterns')
+        : slug[0] === 'workflows' ? t('workflows')
         : slug[0] === 'implementation' ? t('implementation')
         : slug[0] === 'reference' ? t('reference')
         : slug[0],

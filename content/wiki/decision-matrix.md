@@ -18,6 +18,10 @@ description: Pick a multi-agent pattern by task characteristics
 | Comparing multiple options | Debate / Voting / MoA | Single path | Multiple candidates surface conflict |
 | Async multi-party work | Blackboard / Event Bus | Group Chat | Shared state is steadier than long conversations |
 | High-risk operation | Human-in-the-loop + Guardrails | Fully automated | Permission and accountability must be explicit |
+| Codebase-wide audit | Dynamic Workflow + Parallel + Verifier + Worktrees | Single agent | Per-file fan-out + adversarial review at scale |
+| 500-file migration | Dynamic Workflow + Worktree Isolation + Test Loop | Single agent / Group Chat | Parallel per-file porting, build/test fix loop, PR output |
+| Cross-checked research | Dynamic Workflow + Deep Research style verification | Single agent | Independent claim verification before synthesis |
+| Requires mid-run human sign-off | Split into multiple workflows + HITL gates | Single long workflow | Workflows do not accept mid-run user input |
 | Cross-tool ecosystem | MCP | Custom tool protocol | Lowers integration cost |
 | Cross-agent / cross-vendor | A2A / ACP | Private RPC | Better suited to interoperability |
 | IDE to coding agent | Agent Client Protocol | Ad-hoc HTTP API | Closer to coding-agent standard onboarding |

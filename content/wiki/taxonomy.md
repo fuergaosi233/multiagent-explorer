@@ -48,6 +48,18 @@ Don't classify multi-agent patterns by framework name. Classify them by engineer
 | Environment-mediated | Agents collaborate by modifying shared environment | Stigmergy |
 | Simulated learning | Agents interact or train in a simulated environment | Social Simulation / MARL |
 
+## 4b. Workflow orchestration
+
+Where does the plan live?
+
+| Type | Plan representation | Representative patterns | When it fits |
+|---|---|---|---|
+| Per-turn | Plan re-derived by the model each turn | Supervisor + ad-hoc subagents | Short tasks; high interactivity |
+| Predefined graph | Fixed nodes + edges + state | Graph / State Machine | Audited production flows; resumable long tasks |
+| Script-held | Model writes a workflow script; runtime executes | [Dynamic Workflow](patterns/dynamic-workflow-code-orchestration) | Codebase-wide audits; large migrations; cross-checked research |
+
+Graph / State Machine = predefined workflow, design-time. Dynamic Workflow = model-generated / script-held orchestration, run-time. They are not alternatives — graph workflows can run inside a dynamic workflow as one phase.
+
 ## 5. Protocol interconnect
 
 | Protocol | Who connects to whom | Use |

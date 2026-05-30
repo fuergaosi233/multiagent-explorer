@@ -28,3 +28,11 @@ description: 多智能体 Wiki 引用的公开来源
 - **marl_ctde_intro**: <https://arxiv.org/abs/2409.03052>
 - **marl_survey**: <https://arxiv.org/abs/2405.06161v2/>
 - **organizational_paradigms**: <https://dl.acm.org/doi/abs/10.1017/s0269888905000317>
+- **claude_opus_4_8**: <https://www.anthropic.com/news/claude-opus-4-8>
+- **dynamic_workflows_blog**: <https://claude.com/blog/introducing-dynamic-workflows-in-claude-code>
+- **dynamic_workflows_docs**: <https://code.claude.com/docs/en/workflows>
+- **claude_parallel_agents**: <https://code.claude.com/docs/en/agents>
+- **claude_subagents**: <https://code.claude.com/docs/en/sub-agents>
+- **claude_agent_teams**: <https://code.claude.com/docs/en/agent-teams>
+- **claude_worktrees**: <https://code.claude.com/docs/en/worktrees>
+- **riba2534_blog**: <https://blog.riba2534.cn/>

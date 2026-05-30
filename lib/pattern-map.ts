@@ -5,6 +5,7 @@
 
 export type PatternCategory =
   | 'Control'
+  | 'Workflow'
   | 'Information'
   | 'Decision'
   | 'Environment'
@@ -41,6 +42,7 @@ export const PATTERN_TO_WIKI: Record<string, string> = {
   'coalition-federation-holonic':   'coalition-federation-holonic',
   'social-simulation':              'social-simulation',
   'marl-ctde':                      'marl-ctde',
+  'dynamic-workflow':               'dynamic-workflow-code-orchestration',
 };
 
 export const WIKI_TO_PATTERN: Record<string, string> = Object.fromEntries(
@@ -58,6 +60,12 @@ export const PATTERN_CATEGORIES: { label: PatternCategory; slugs: string[] }[] =
       'graph-workflow',
       'peer-swarm',
       'coordinator-dispatcher',
+    ],
+  },
+  {
+    label: 'Workflow',
+    slugs: [
+      'dynamic-workflow-code-orchestration',
     ],
   },
   {
@@ -114,6 +122,7 @@ export const PATTERN_CATEGORY: Record<string, PatternCategory> = Object.fromEntr
 /** Hex equivalents of CATEGORY_TONE — used by the dynamic OG image generator. */
 export const CATEGORY_HEX: Record<PatternCategory, string> = {
   Control:     '#f59e0b',
+  Workflow:    '#ec4899',
   Information: '#0ea5e9',
   Decision:    '#8b5cf6',
   Environment: '#10b981',
@@ -124,6 +133,7 @@ export const CATEGORY_HEX: Record<PatternCategory, string> = {
 /** Map category → a Tailwind color hint for badges. */
 export const CATEGORY_TONE: Record<PatternCategory, string> = {
   Control:      'bg-amber-500/10 text-amber-600 border-amber-500/25 dark:text-amber-400',
+  Workflow:     'bg-pink-500/10 text-pink-700 border-pink-500/25 dark:text-pink-300',
   Information:  'bg-sky-500/10 text-sky-700 border-sky-500/25 dark:text-sky-300',
   Decision:     'bg-violet-500/10 text-violet-700 border-violet-500/25 dark:text-violet-300',
   Environment:  'bg-emerald-500/10 text-emerald-700 border-emerald-500/25 dark:text-emerald-300',
@@ -134,6 +144,7 @@ export const CATEGORY_TONE: Record<PatternCategory, string> = {
 const CATEGORY_LABELS: Record<string, Record<string, string>> = {
   zh: {
     Control: '控制',
+    Workflow: '工作流',
     Information: '信息',
     Decision: '决策',
     Environment: '环境',

@@ -66,3 +66,30 @@ async function runPattern(input: Input): Promise<Output> {
 ## References
 
 - Link 1
+
+## Optional sections
+
+The base sections above cover most patterns. Patterns that interact with the orchestrator runtime or have an animated counterpart may need additional sections:
+
+### Orchestration semantics (optional)
+
+For patterns where the control flow or scheduling semantics are load-bearing. Use this section to specify:
+
+- Where the plan lives (per-turn, predefined graph, or script-held).
+- Whether the pattern is barrier-style (waits for all) or stream-style (per-item).
+- How intermediate state is held.
+- How recovery works on interruption.
+
+See the [Dynamic Workflow](/patterns/dynamic-workflow-code-orchestration) page for an example.
+
+### Trace events (optional)
+
+For patterns that warrant dedicated event types beyond the generic `pattern.started` / `pattern.completed`. List the events your pattern emits, when they fire, and what fields they carry. Cross-reference [Observability and Event Model](observability) for naming conventions.
+
+### Animation mapping (optional)
+
+If the pattern has an animated counterpart in `data/patterns-extra.ts` or `data/patterns.ts`:
+
+- Note the animation `id` and confirm the mapping in `lib/pattern-map.ts`.
+- Document any conceptual mismatch between the topology diagram and the animation (e.g., simplified node count).
+- If the animation has variants (parallel barrier, pipeline stream, adversarial review), summarize what each variant illustrates.

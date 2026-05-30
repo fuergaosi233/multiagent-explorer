@@ -81,6 +81,43 @@ Session
    └─ approved
 ```
 
+## Workflow run observability
+
+A Dynamic Workflow run produces a richer event tree than a single agent. Events are needed at the workflow, phase, agent, claim, and checkpoint layers so that any node in the tree can be reconstructed after the run.
+
+| Event type | When emitted | Key fields |
+|---|---|---|
+| `workflow.created` | Claude wrote the script | workflowId, script, phases, estimatedTokens |
+| `workflow.approved` | User confirmed before run | workflowId, approvedAt, approvedBy |
+| `workflow.phase.started` | Script entered a named phase | workflowId, phase, inputCount |
+| `workflow.phase.completed` | Phase exited successfully | workflowId, phase, outputCount, tokens |
+| `agent.spawned` | Script called `agent()` / `parallel()` | workflowId, phase, agentTask, parentSpanId |
+| `agent.completed` | Subagent returned | agentId, tokens, durationMs, resultSchema |
+| `claim.verified` | Verifier accepted or rejected a finding | findingId, verifierAgentId, verdict, evidence |
+| `workflow.checkpoint.saved` | Runtime persisted state | workflowId, phase, stateBytes |
+| `workflow.checkpoint.resumed` | Script restarted from checkpoint | workflowId, phase, resumedAt |
+| `workflow.finalized` | Final synthesis returned to user session | workflowId, totalTokens, totalAgents, durationMs |
+
+The trace tree for a workflow run typically nests as:
+
+```
+workflow.created
+└─ workflow.approved
+   └─ workflow.phase.started (discover)
+      ├─ agent.spawned (map-codebase)
+      └─ agent.completed
+   └─ workflow.phase.started (audit)
+      ├─ agent.spawned × N (audit-file, parallel barrier)
+      └─ agent.completed × N
+   └─ workflow.checkpoint.saved
+   └─ workflow.phase.started (verify)
+      ├─ agent.spawned × N (adversarial-review)
+      ├─ claim.verified × N
+   └─ workflow.finalized
+```
+
+Every workflow event should carry the `workflowId`, and every nested `agent.*` event should carry the originating `phase` so that traces can be sliced by phase or by agent.
+
 ## Minimum viable pipeline
 
 1. Write every event to append-only JSONL first.
