@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { NextIntlClientProvider } from 'next-intl';
+import { Analytics } from '@vercel/analytics/next';
 import { ThemeProvider } from '@/components/theme-provider';
 import { TopNav } from '@/components/top-nav';
 import { WikiSidebar } from '@/components/wiki/sidebar';
@@ -88,6 +89,7 @@ export default async function RootLayout({
             </div>
           </ThemeProvider>
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );
