@@ -54,10 +54,10 @@ export function AnimatedPattern({ patternId }: Props) {
     <section className="flex flex-col gap-3 rounded-xl border border-border bg-card/40 p-4 shadow-sm">
       <header className="flex flex-wrap items-center gap-2">
         <Badge variant="brand">{t('diagram.viewer')}</Badge>
-        <span className="text-[12px] text-muted-foreground">
-          {locale === 'zh'
-            ? '动态拓扑 — 按 Space 播放 / 暂停'
-            : 'Animated topology — press <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px]">Space</kbd> to play / pause'}
+        <span className="inline-flex flex-wrap items-center gap-1 text-[12px] text-muted-foreground">
+          {locale === 'zh' ? '动态拓扑 — 按 ' : 'Animated topology — press '}
+          <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px]">Space</kbd>
+          {locale === 'zh' ? ' 播放 / 暂停' : ' to play / pause'}
         </span>
       </header>
 
