@@ -1,9 +1,9 @@
 ---
-title: 黑板 / 共享内存 / 工作空间 / Blackboard / Shared Memory / Workspace
+title: 黑板与共享内存
 description: 智能体通过共享状态、知识、任务板或工作空间进行间接协作。
 ---
 
-# 黑板 / 共享内存 / 工作空间
+# 黑板与共享内存
 
 ## 定义
 

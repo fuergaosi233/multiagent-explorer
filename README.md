@@ -41,6 +41,8 @@ app/
   page.tsx              — wiki home (renders content/wiki/index.md)
   [...slug]/page.tsx    — catch-all that renders any wiki page; embeds the live
                           visualization on pattern pages that have a matching animation
+  md/route.ts, md/[...slug]/route.ts
+                        — canonical English markdown source for AI agents
   llms.txt/route.ts     — agent-friendly index of the wiki
   llms-full.txt/route.ts — every wiki page concatenated as plain markdown
   icon.svg              — brand mark, auto-served as favicon
@@ -70,8 +72,10 @@ lib/
 | ---------------- | ---------------------------------------------------------------------------------------- |
 | `/llms.txt`      | Overview + one-line summary of every page ([llms.txt spec](https://llmstxt.org/))         |
 | `/llms-full.txt` | Every wiki page concatenated as plain markdown                                            |
+| `/index.md`      | Raw English Markdown source for the homepage                                             |
+| `/<page>.md`     | Raw English Markdown source for any wiki page, e.g. `/patterns/supervisor-manager.md`    |
 
-Both are generated at build time from `content/wiki/` via route handlers (`dynamic = 'force-static'`). The HTML `<head>` includes `<link rel="alternate" type="text/markdown" href="/llms.txt">` for discovery.
+These are generated at build time from `content/wiki/` via route handlers (`dynamic = 'force-static'`). Each HTML page includes a `text/markdown` alternate pointing at its `.md` version, and requests with `Accept: text/markdown` are rewritten to the same canonical English Markdown source.
 
 ## Adding a new pattern page
 

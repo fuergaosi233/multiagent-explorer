@@ -1,5 +1,5 @@
 ---
-title: 编排原语 / Orchestration Primitives
+title: 编排原语
 description: 动态工作流脚本的概念构件 —— agent、parallel、pipeline、checkpoint、budget。
 ---
 

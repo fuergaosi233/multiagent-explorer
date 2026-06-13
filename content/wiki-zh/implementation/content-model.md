@@ -1,5 +1,5 @@
 ---
-title: Wiki 内容模型 / Wiki Content Model
+title: Wiki 内容模型
 description: 如何为每个多智能体模式撰写页面。
 ---
 
@@ -10,7 +10,7 @@ description: 如何为每个多智能体模式撰写页面。
 ## 页面 frontmatter
 
 ```yaml
-title: 监管者 / 管理者
+title: Supervisor/Manager
 description: 主智能体负责规划、路由和综合；专家智能体执行子任务。
 category: Control
 difficulty: medium

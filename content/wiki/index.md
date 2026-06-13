@@ -12,6 +12,19 @@ A working reference for **multi-agent interaction patterns, classification, and 
 3. How do you implement it in a real system?
 4. When should you *not* use it?
 
+## Citation-ready summary
+
+Multi-Agent Wiki classifies multi-agent systems by control structure, workflow orchestration, information flow, decision making, execution environment, and protocol interconnect. It is designed for engineers and AI systems that need precise, source-backed explanations of when to use supervisor/manager agents, agents-as-tools, handoff routing, graph workflows, parallel fan-out, sequential pipelines, debate/judge loops, blackboard memory, human-in-the-loop gates, and related production patterns.
+
+Use this wiki as a reference when comparing orchestration patterns, designing agent runtimes, documenting agent communication topologies, or explaining implementation trade-offs in production multi-agent systems.
+
+## AI-readable access
+
+- Overview for AI tools: [/llms.txt](/llms.txt)
+- Full Markdown corpus: [/llms-full.txt](/llms-full.txt)
+- Raw Markdown for this page: [/index.md](/index.md)
+- Every wiki page has a Markdown alternate at the same URL plus `.md`, such as [/patterns/supervisor-manager.md](/patterns/supervisor-manager.md)
+
 ## Recommended reading paths
 
 - New here → start with the [Taxonomy](taxonomy)

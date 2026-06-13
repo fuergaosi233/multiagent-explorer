@@ -148,8 +148,41 @@ test.describe('Multi-Agent Wiki', () => {
   test('llms.txt endpoint is served', async ({ page }) => {
     const res = await page.goto('/llms.txt');
     expect(res?.status()).toBe(200);
-    expect(res?.headers()['content-type']).toContain('text/plain');
+    expect(res?.headers()['content-type']).toContain('text/markdown');
     const body = await page.content();
     expect(body).toContain('Multi-Agent Wiki');
+  });
+
+  test('wiki pages expose canonical markdown alternates', async ({ page }) => {
+    await page.goto('/patterns/supervisor-manager');
+    const markdownHref = await page
+      .locator('link[rel="alternate"][type="text/markdown"]')
+      .first()
+      .getAttribute('href');
+    expect(markdownHref).toBe('https://multi-agent.wiki/patterns/supervisor-manager.md');
+
+    const md = await page.request.get('/patterns/supervisor-manager.md');
+    expect(md.status()).toBe(200);
+    expect(md.headers()['content-type']).toContain('text/markdown');
+    expect(await md.text()).toContain('title: Supervisor / Manager');
+  });
+
+  test('accept header can negotiate wiki pages to markdown', async ({ page }) => {
+    const md = await page.request.get('/patterns/supervisor-manager', {
+      headers: { Accept: 'text/markdown' },
+    });
+    expect(md.status()).toBe(200);
+    expect(md.headers()['content-type']).toContain('text/markdown');
+    expect(await md.text()).toContain('# Supervisor / Manager');
+  });
+
+  test('robots separates search bots from training bots', async ({ page }) => {
+    const res = await page.request.get('/robots.txt');
+    expect(res.status()).toBe(200);
+    const text = await res.text();
+    expect(text).toContain('User-Agent: OAI-SearchBot');
+    expect(text).toContain('User-Agent: GPTBot');
+    expect(text).toContain('Disallow: /');
+    expect(text).toContain('Sitemap: https://multi-agent.wiki/sitemap.xml');
   });
 });

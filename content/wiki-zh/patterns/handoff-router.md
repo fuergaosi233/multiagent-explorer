@@ -1,9 +1,9 @@
 ---
-title: 交接 / 路由器 / 转移 / Handoff / Router / Transfer
+title: 交接路由
 description: 当前智能体将对话控制权转移给另一个智能体。
 ---
 
-# 交接 / 路由器 / 转移
+# 交接路由
 
 ## 定义
 

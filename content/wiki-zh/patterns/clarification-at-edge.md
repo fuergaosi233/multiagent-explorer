@@ -1,9 +1,9 @@
 ---
-title: 边缘澄清 / 先问后行 / Clarification-at-edge / Ask-before-act
+title: 边界澄清
 description: 在智能体间交接边界或不确定操作之前插入澄清步骤。
 ---
 
-# 边缘澄清 / 先问后行
+# 边界澄清
 
 ## 定义
 

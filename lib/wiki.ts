@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
-import { getLocale } from './locale';
 
 const EN_ROOT = path.join(process.cwd(), 'content', 'wiki');
 const ZH_ROOT = path.join(process.cwd(), 'content', 'wiki-zh');
@@ -52,6 +51,14 @@ export function loadDoc(slug: string[], locale?: string): WikiDoc | null {
   const file = resolveSlug(normalized, root);
   if (!file) return null;
   return readDoc(file, normalized);
+}
+
+export function loadRawDoc(slug: string[], locale?: string): string | null {
+  const normalized = slug[slug.length - 1] === 'index' ? slug.slice(0, -1) : slug;
+  const root = getWikiRoot(locale);
+  const file = resolveSlug(normalized, root);
+  if (!file) return null;
+  return fs.readFileSync(file, 'utf8');
 }
 
 /** Walk the wiki dir and return every slug array (excluding folder-only entries). */

@@ -1,9 +1,9 @@
 ---
-title: 图 / 状态机 / 工作流 / Graph / State Machine / Workflow
+title: 图工作流与状态机
 description: 用显式图或状态机定义流程，而非让大语言模型即兴发挥。
 ---
 
-# 图 / 状态机 / 工作流
+# 图工作流与状态机
 
 ## 定义
 

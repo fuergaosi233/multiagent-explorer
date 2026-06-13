@@ -1,9 +1,9 @@
 ---
-title: 并行扇出 / 汇聚 / Parallel Fan-out / Gather
+title: 并行扇出与汇聚
 description: 将一个任务拆分到多个智能体并行执行；由聚合器合并结果。
 ---
 
-# 并行扇出 / 汇聚
+# 并行扇出与汇聚
 
 ## 定义
 

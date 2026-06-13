@@ -11,6 +11,7 @@ import {
   type PatternCategory,
 } from '@/lib/pattern-map';
 import { getLocale } from '@/lib/locale';
+import { markdownPathForSlug } from '@/lib/wiki-md';
 import { getTranslations } from 'next-intl/server';
 
 export const dynamicParams = false;
@@ -35,7 +36,10 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: doc.title,
     description: doc.description,
-    alternates: { canonical: path },
+    alternates: {
+      canonical: path,
+      types: { 'text/markdown': markdownPathForSlug(slug) },
+    },
     openGraph: {
       type: 'article',
       title: doc.title,

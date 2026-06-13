@@ -1,5 +1,5 @@
 ---
-title: 参考文献 / References
+title: 参考文献
 description: 多智能体 Wiki 引用的公开来源
 ---
 

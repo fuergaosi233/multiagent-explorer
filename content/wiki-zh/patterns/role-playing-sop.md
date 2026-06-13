@@ -1,9 +1,9 @@
 ---
-title: 角色扮演 / SOP / 虚拟公司 / Role-playing / SOP / Virtual Company
+title: 角色扮演 SOP
 description: 智能体扮演产品、架构、开发、QA 角色，并受文档化标准操作程序的约束。
 ---
 
-# 角色扮演 / SOP / 虚拟公司
+# 角色扮演 SOP
 
 ## 定义
 

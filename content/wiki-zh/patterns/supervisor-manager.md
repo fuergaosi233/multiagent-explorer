@@ -1,9 +1,9 @@
 ---
-title: 监管者 / 管理者 / Supervisor / Manager
+title: Supervisor/Manager
 description: 主智能体规划、路由和综合；专家执行子任务。
 ---
 
-# 监管者 / 管理者
+# Supervisor/Manager
 
 ## 定义
 

@@ -1,5 +1,5 @@
 ---
-title: 顺序流水线 / Sequential Pipeline
+title: 顺序流水线
 description: 任务按固定顺序流经各个智能体；每一步的输出作为下一步的输入。
 ---
 
