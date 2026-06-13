@@ -50,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
     robots: { index: true, follow: true },
     alternates: {
       canonical: '/',
-      types: { 'text/markdown': '/llms.txt' },
+      types: { 'text/markdown': '/index.md' },
     },
   };
 }
