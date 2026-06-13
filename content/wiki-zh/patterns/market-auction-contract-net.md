@@ -1,9 +1,9 @@
 ---
-title: 市场 / 拍卖 / 合同网 / Market / Auction / Contract Net
+title: 市场、拍卖与合同网
 description: 通过竞价、定价或合同网协议来分配任务和资源。
 ---
 
-# 市场 / 拍卖 / 合同网
+# 市场、拍卖与合同网
 
 ## 定义
 

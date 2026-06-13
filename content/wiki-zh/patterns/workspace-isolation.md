@@ -1,9 +1,9 @@
 ---
-title: 工作空间 / 沙箱隔离 / Workspace / Sandbox Isolation
+title: 工作空间隔离
 description: 每个智能体在自己的工作空间、git 工作树、容器或沙箱中运行。
 ---
 
-# 工作空间 / 沙箱隔离
+# 工作空间隔离
 
 ## 定义
 

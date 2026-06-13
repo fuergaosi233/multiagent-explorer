@@ -1,5 +1,5 @@
 ---
-title: 安全、权限与护栏 / Safety, Permissions, and Guardrails
+title: 安全、权限与护栏
 description: 多智能体平台的安全边界设计。
 ---
 

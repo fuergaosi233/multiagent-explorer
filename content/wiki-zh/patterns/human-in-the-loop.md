@@ -1,9 +1,9 @@
 ---
-title: 人在回路 / Human-in-the-loop
+title: 人在回路（HITL）
 description: 将人视为一种特殊智能体——用于审批、纠错、路由、中断或最终决策。
 ---
 
-# 人在回路
+# 人在回路（HITL）
 
 ## 定义
 

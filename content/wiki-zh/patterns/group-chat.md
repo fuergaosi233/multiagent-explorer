@@ -1,9 +1,9 @@
 ---
-title: 群聊 / 会议 / Group Chat / Meeting
+title: 群聊会议
 description: 多个智能体共享一个会话线程；由主持人或选择器决定下一个发言者。
 ---
 
-# 群聊 / 会议
+# 群聊会议
 
 ## 定义
 

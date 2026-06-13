@@ -1,9 +1,9 @@
 ---
-title: 嵌套聊天 / 内部团队 / Nested Chat / Inner Team
+title: 嵌套聊天
 description: 智能体在对外回复前，先运行一个内部的多智能体子对话。
 ---
 
-# 嵌套聊天 / 内部团队
+# 嵌套聊天
 
 ## 定义
 

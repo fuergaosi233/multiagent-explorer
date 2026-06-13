@@ -1,5 +1,5 @@
 ---
-title: 层级分解 / Hierarchical Decomposition
+title: 层级分解
 description: 多级管理者-工作者层级结构——上层负责分解，下层负责执行，必要时递归进行。
 ---
 

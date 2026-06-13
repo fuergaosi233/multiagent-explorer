@@ -1,5 +1,5 @@
 ---
-title: 智能体即工具 / Agents-as-tools
+title: 智能体即工具
 description: 将专业智能体封装为工具；主控智能体保持对话控制权。
 ---
 

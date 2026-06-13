@@ -1,9 +1,9 @@
 ---
-title: 联盟 / 联邦 / 全息组织 / Coalition / Federation / Holonic Organization
+title: 联盟、联邦与 Holonic 组织
 description: 智能体围绕任务临时组成联盟、团队、联邦或全息体。
 ---
 
-# 联盟 / 联邦 / 全息组织
+# 联盟、联邦与 Holonic 组织
 
 ## 定义
 

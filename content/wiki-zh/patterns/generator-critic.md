@@ -1,9 +1,9 @@
 ---
-title: 生成器-批评者 / 验证器 / Generator-Critic / Verifier
+title: 生成器-批评者
 description: 一个智能体产出；另一个进行批评、验证、评分或提出修改建议。
 ---
 
-# 生成器-批评者 / 验证器
+# 生成器-批评者
 
 ## 定义
 

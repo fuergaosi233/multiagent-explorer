@@ -1,9 +1,9 @@
 ---
-title: 辩论 / 裁决 / 投票 / Debate / Judge / Voting
+title: 辩论与裁决
 description: 多个智能体进行辩论；由裁决者或投票机制得出结论。
 ---
 
-# 辩论 / 裁决 / 投票
+# 辩论与裁决
 
 ## 定义
 
