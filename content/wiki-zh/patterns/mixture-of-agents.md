@@ -1,9 +1,9 @@
 ---
-title: 智能体混合 / 分层集成 / Mixture-of-Agents / Layered Ensemble
+title: 智能体混合（MoA）
 description: 多个模型或智能体分层堆叠；每一层读取多个前层输出并加以改进。
 ---
 
-# 智能体混合 / 分层集成
+# 智能体混合（MoA）
 
 ## 定义
 

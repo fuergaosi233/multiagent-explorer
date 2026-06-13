@@ -1,5 +1,5 @@
 ---
-title: Bun Zig→Rust 迁移案例 / Bun Zig→Rust Migration Case
+title: Bun Zig→Rust 迁移案例
 description: Anthropic 在动态工作流公告中提到的 Bun 运行时迁移的工程分解。
 ---
 

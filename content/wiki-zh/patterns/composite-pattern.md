@@ -1,9 +1,9 @@
 ---
-title: 组合模式 / Composite Pattern
+title: 复合模式
 description: 真实生产系统会组合流水线、并行、交接、批评者、人机协同、黑板和协议层。
 ---
 
-# 组合模式
+# 复合模式
 
 ## 定义
 

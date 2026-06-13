@@ -1,5 +1,5 @@
 ---
-title: 治理、权限与成本 / Governance, Permission, and Cost
+title: 治理、权限与成本
 description: 工作流是工程系统而非聊天功能。审批、权限、成本控制、恢复、可观测性、回滚必须在长任务前设计好。
 ---
 

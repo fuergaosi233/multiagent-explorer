@@ -1,5 +1,5 @@
 ---
-title: 可观测性与事件模型 / Observability and Event Model
+title: 可观测性与事件模型
 description: 多智能体平台的追踪、事件和指标设计。
 ---
 

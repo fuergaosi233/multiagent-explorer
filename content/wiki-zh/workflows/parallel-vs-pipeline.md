@@ -1,5 +1,5 @@
 ---
-title: Parallel vs Pipeline / 并行屏障 vs 流水线
+title: 并行屏障与流水线
 description: Barrier 语义 vs Stream 语义 —— 并发模型差异决定原语选择。
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: 模式页面模板 / Pattern Page Template
+title: 模式页面模板
 description: 添加新的多智能体模式页面时使用此模板。
 ---
 

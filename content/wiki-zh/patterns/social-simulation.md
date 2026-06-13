@@ -1,9 +1,9 @@
 ---
-title: 社会模拟 / 智能体社会 / Social Simulation / Agent Society
+title: 智能体社会模拟
 description: 模拟具有长期记忆、关系和涌现行为的人群、组织或社会。
 ---
 
-# 社会模拟 / 智能体社会
+# 智能体社会模拟
 
 ## 定义
 

@@ -1,9 +1,9 @@
 ---
-title: 精化循环 / 评估器-优化器 / Refinement Loop / Evaluator-Optimizer
+title: 精化循环
 description: 生成 → 评估 → 修订，直到满足退出条件或预算耗尽。
 ---
 
-# 精化循环 / 评估器-优化器
+# 精化循环
 
 ## 定义
 

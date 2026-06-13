@@ -1,9 +1,9 @@
 ---
-title: 协议中介的智能体网络 / Protocol-mediated Agent Network
+title: 协议中介智能体网络
 description: 通过标准协议——MCP、A2A、ACP、Agent Client Protocol——连接工具、智能体、客户端和平台。
 ---
 
-# 协议中介的智能体网络
+# 协议中介智能体网络
 
 ## 定义
 

@@ -1,5 +1,5 @@
 ---
-title: 生产级多智能体运行时 / Production Multi-Agent Runtime
+title: 生产级多智能体运行时
 description: 适用于内部编码智能体平台和智能体后端的架构。
 ---
 
@@ -9,13 +9,13 @@ description: 适用于内部编码智能体平台和智能体后端的架构。
 
 ```mermaid
 flowchart TD
-  U[用户 / IDE / CLI] --> Client[智能体客户端 / Web UI]
-  Client --> API[应用服务器 / 会话 API]
+  U[用户、IDE、CLI] --> Client[智能体客户端与 Web UI]
+  Client --> API[应用服务器与会话 API]
   API --> O[编排器]
 
-  O --> Router[路由器 / 策略]
+  O --> Router[路由策略]
   O --> Registry[任务注册表]
-  O --> Memory[黑板 / 上下文存储]
+  O --> Memory[黑板与上下文存储]
   O --> Trace[追踪 / 事件日志]
   O --> Guard[护栏 / 权限]
 
@@ -25,14 +25,14 @@ flowchart TD
   Router --> Review[审查智能体]
   Router --> Test[测试智能体]
 
-  Code --> W1[工作空间 / 工作树]
+  Code --> W1[工作空间与工作树]
   Test --> W2[测试沙箱]
   Search --> MCP[MCP 工具]
   Review --> MCP
   Planner --> MCP
 
   Guard --> HITL[人工审批]
-  Review --> Verifier[验证器 / 批评者]
+  Review --> Verifier[验证器与批评者]
   Verifier --> O
 ```
 
@@ -40,12 +40,12 @@ flowchart TD
 
 | 模块 | 职责 | 需交付的能力 |
 |---|---|---|
-| 应用服务器 / 会话 API | 接收来自用户、IDE、CLI 的请求 | 会话、流式传输、取消、恢复 |
+| 应用服务器与会话 API | 接收来自用户、IDE、CLI 的请求 | 会话、流式传输、取消、恢复 |
 | 编排器 | 调度智能体和工作流 | 规划、路由、重试、超时、检查点 |
 | 智能体注册表 | 管理智能体定义 | 名称、角色、模型、工具、权限、提示词 |
 | 任务注册表 | 管理任务树 | 任务 ID、父 ID、状态、所有者、工件 |
-| 黑板 / 上下文存储 | 保存共享事实和工件 | 事实、工件、决策、TTL、来源 |
-| 事件日志 / 追踪 | 记录每个动作 | 消息、工具调用、交接、状态变更 |
+| 黑板与上下文存储 | 保存共享事实和工件 | 事实、工件、决策、TTL、来源 |
+| 事件日志与追踪 | 记录每个动作 | 消息、工具调用、交接、状态变更 |
 | 护栏 | 权限和安全 | 策略、风险评分、审批、沙箱 |
 | 工作空间管理器 | 隔离执行 | 工作树、容器、快照、回滚 |
 | 协议网关 | 向其他系统暴露接口 | MCP、A2A、智能体客户端协议 |

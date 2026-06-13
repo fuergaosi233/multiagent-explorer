@@ -1,9 +1,9 @@
 ---
-title: 间接协作 / 环境介导协作 / Stigmergy / Environment-mediated Collaboration
+title: 环境媒介协作
 description: 智能体通过在环境中留下痕迹进行协作；其他智能体观察并响应这些痕迹。
 ---
 
-# 间接协作 / 环境介导协作
+# 环境媒介协作
 
 ## 定义
 
